@@ -1,3 +1,5 @@
+'use client';  // Add this at the top of the file
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 
