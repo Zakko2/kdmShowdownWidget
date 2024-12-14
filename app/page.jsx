@@ -1,5 +1,5 @@
-import CalculatorApp from '../components/HitCalculator'
+import CalculatorApp from '../components/CalculatorApp'
 
 export default function Home() {
-  return <HitCalculator />
+  return <CalculatorApp />
 }
