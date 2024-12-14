@@ -1,5 +1,4 @@
-// components/ui/card.jsx
-import { cn } from "@/lib/utils"
+import { cn } from '../../lib/utils'
 
 const Card = ({ className, ...props }) => (
   <div className={cn("rounded-lg border bg-card text-card-foreground shadow-sm", className)} {...props} />
