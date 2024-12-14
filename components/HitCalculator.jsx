@@ -6,13 +6,13 @@ import { Plus, Minus, Sword, Target } from 'lucide-react';
 
 const WoundCalculator = () => {
   return (
-    <Card className="w-full h-full">
+    <Card className="w-full h-full bg-gray-900 border-gray-700">
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl text-center">Wound Calculator</CardTitle>
+        <CardTitle className="text-xl text-center text-gray-200">Wound Calculator</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-center h-full">
-          <p className="text-gray-500 text-lg">Coming Soon</p>
+          <p className="text-gray-400 text-lg">Coming Soon</p>
         </div>
       </CardContent>
     </Card>
@@ -44,20 +44,20 @@ const HitCalculator = () => {
 
     return (
       <div className="flex flex-col items-center space-y-2">
-        <label className="text-sm font-medium text-gray-600">{label}</label>
+        <label className="text-sm font-medium text-gray-300">{label}</label>
         <div className="flex items-center justify-center w-full space-x-3">
           <button
             onClick={decrement}
-            className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 active:bg-gray-300 transition-colors"
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 transition-colors"
           >
-            <Minus className="w-6 h-6 text-gray-600" />
+            <Minus className="w-6 h-6 text-gray-300" />
           </button>
-          <div className="w-12 text-center text-xl font-bold">{value}</div>
+          <div className="w-12 text-center text-xl font-bold text-gray-200">{value}</div>
           <button
             onClick={increment}
-            className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 active:bg-gray-300 transition-colors"
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 transition-colors"
           >
-            <Plus className="w-6 h-6 text-gray-600" />
+            <Plus className="w-6 h-6 text-gray-300" />
           </button>
         </div>
       </div>
@@ -71,16 +71,16 @@ const HitCalculator = () => {
         id={id}
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="h-6 w-6 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        className="h-6 w-6 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500"
       />
-      <label htmlFor={id} className="text-base text-gray-600">{label}</label>
+      <label htmlFor={id} className="text-base text-gray-300">{label}</label>
     </div>
   );
 
   return (
-    <Card className="w-full h-full">
+    <Card className="w-full h-full bg-gray-900 border-gray-700">
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl text-center">Hit Calculator</CardTitle>
+        <CardTitle className="text-xl text-center text-gray-200">Hit Calculator</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-8">
@@ -102,7 +102,7 @@ const HitCalculator = () => {
             />
           </div>
           
-          <div className="space-y-2 border-t border-b py-4">
+          <div className="space-y-2 border-t border-b border-gray-700 py-4">
             <Checkbox 
               id="blindSpot"
               label="Attacking from Blind Spot (+1 accuracy)"
@@ -117,9 +117,9 @@ const HitCalculator = () => {
             />
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-6 text-center">
-            <h3 className="text-sm font-medium text-gray-600 mb-2">Required Roll</h3>
-            <p className="text-4xl font-bold text-gray-900">{requiredRoll}+</p>
+          <div className="bg-gray-800 rounded-lg p-6 text-center">
+            <h3 className="text-sm font-medium text-gray-400 mb-2">Required Roll</h3>
+            <p className="text-4xl font-bold text-gray-100">{requiredRoll}+</p>
             <p className="text-xs text-gray-500 mt-2">
               Lantern 10 always hits • 1 always misses
             </p>
@@ -134,17 +134,17 @@ const CalculatorApp = () => {
   const [currentPage, setCurrentPage] = useState('hit');
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-black">
       <div className="flex-1 p-4">
         {currentPage === 'hit' ? <HitCalculator /> : <WoundCalculator />}
       </div>
       
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-700">
         <div className="flex justify-around p-2">
           <button
             onClick={() => setCurrentPage('hit')}
             className={`flex flex-col items-center p-2 rounded-lg flex-1 mx-1 ${
-              currentPage === 'hit' ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+              currentPage === 'hit' ? 'bg-gray-800 text-blue-400' : 'text-gray-400'
             }`}
           >
             <Target className="w-6 h-6" />
@@ -153,7 +153,7 @@ const CalculatorApp = () => {
           <button
             onClick={() => setCurrentPage('wound')}
             className={`flex flex-col items-center p-2 rounded-lg flex-1 mx-1 ${
-              currentPage === 'wound' ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+              currentPage === 'wound' ? 'bg-gray-800 text-blue-400' : 'text-gray-400'
             }`}
           >
             <Sword className="w-6 h-6" />
