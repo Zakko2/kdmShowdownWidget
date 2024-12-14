@@ -11,7 +11,7 @@ const StatInput = ({ label, value, onChange }) => {
   return (
     <div className="flex flex-col items-center space-y-2">
       <label className="text-sm font-medium text-gray-300">{label}</label>
-      <div className="flex items-center justify-center w-full space-x-3">
+      <div className="flex items-center  justify-center w-full space-x-3">
         <button
           onClick={decrement}
           className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 transition-colors"
