@@ -1,5 +1,4 @@
-// app/page.jsx
-import HitCalculator from '@/components/HitCalculator'
+import HitCalculator from '../components/HitCalculator'
 
 export default function Home() {
   return (
