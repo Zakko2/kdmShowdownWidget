@@ -56,8 +56,8 @@ const WoundCalculator = () => {
     setRequiredRoll(required);
   }, [weaponStrength, survivorStrength, monsterToughness]);
 
-  const criticalRange = Math.max(10 - luck, 10);
-  const criticalText = luck > 0 ? `${criticalRange}-10` : "Lantern 10";
+  const criticalRange = Math.max(1, 10 - luck);
+  const criticalText = luck > 0 ? `${criticalRange}+` : "Lantern 10";
 
   return (
     <Card className="w-full h-full bg-gray-900 border-gray-700">
