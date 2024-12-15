@@ -75,25 +75,25 @@ const WoundCalculator = ({
       </CardHeader>
       <CardContent className="p-3 h-full">
         <div className="flex flex-col h-full space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 mb-3">
             <StatInput 
-              label="Weapon Strength"
+              label="Weapon Str"
               value={weaponStrength}
               onChange={setWeaponStrength}
             />
             <StatInput 
-              label="Survivor Strength"
+              label="Survivor Str"
               value={survivorStrength}
               onChange={setSurvivorStrength}
             />
             <StatInput 
-              label="Monster Toughness"
+              label="Monster Tough"
               value={monsterToughness}
               onChange={setMonsterToughness}
             />
           </div>
           
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-3">
             <StatInput 
               label="Survivor Luck"
               value={luck}
