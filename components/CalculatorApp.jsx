@@ -48,10 +48,12 @@ const WoundCalculator = ({
   survivorStrength, setSurvivorStrength,
   monsterToughness, setMonsterToughness,
   luck, setLuck,
+  monsterLuck, setMonsterLuck,
   requiredRoll 
 }) => {
-  const criticalRange = Math.max(1, 10 - luck);
-  const criticalText = luck > 0 ? `${criticalRange}+` : "Lantern 10";
+  // Critical range is expanded by survivor luck and reduced by monster luck
+  const criticalRange = Math.max(2, 10 - luck + monsterLuck);
+  const criticalText = (luck > 0 || monsterLuck < 0) ? `${criticalRange}+` : "Lantern 10";
 
   return (
     <Card className="w-full h-full bg-gray-900 border-gray-700">
@@ -78,11 +80,16 @@ const WoundCalculator = ({
             />
           </div>
           
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <StatInput 
-              label="Luck"
+              label="Survivor Luck"
               value={luck}
               onChange={setLuck}
+            />
+            <StatInput 
+              label="Monster Luck"
+              value={monsterLuck}
+              onChange={setMonsterLuck}
             />
           </div>
 
@@ -192,6 +199,8 @@ const CalculatorApp = () => {
     setHitRequiredRoll(total);
   }, [survivorAccuracy, weaponAccuracy, monsterEvasion, inBlindSpot, monsterKnockedDown]);
 
+  const [monsterLuck, setMonsterLuck] = useState(0);  // Add this with other wound calculator state
+
   // Wound calculator effect
   React.useEffect(() => {
     let required = monsterToughness - weaponStrength - survivorStrength;
@@ -227,6 +236,8 @@ const CalculatorApp = () => {
               setMonsterToughness={setMonsterToughness}
               luck={luck}
               setLuck={setLuck}
+              monsterLuck={monsterLuck}
+              setMonsterLuck={setMonsterLuck}
               requiredRoll={woundRequiredRoll}
             />
           )}
