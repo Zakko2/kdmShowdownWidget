@@ -54,26 +54,18 @@ const WoundCalculator = ({
   // Calculate if and when critical wounds are possible
   let criticalText = "Lantern 10";
   
-  // Start with base case - critical on lantern 10
-  let criticalValue = 10;
+  // Compare survivor and monster luck first
+  const netLuck = luck - monsterLuck;
   
-  // If survivor has positive luck, they can crit on lower rolls
-  if (luck > 0) {
-    criticalValue = Math.max(2, 10 - luck);
-  }
-  
-  // If monster has positive luck, it increases the required roll
-  if (monsterLuck > 0) {
-    criticalValue = criticalValue + monsterLuck;
-  }
-  
-  // If critical value exceeds 10, no crits are possible
-  if (criticalValue > 10) {
+  if (monsterLuck > luck) {
+    // If monster luck exceeds survivor luck, no crits possible
     criticalText = "Not possible";
-  } else if (criticalValue === 10) {
-    criticalText = "Lantern 10";
-  } else {
-    criticalText = `${criticalValue}+`;
+  } else if (netLuck > 0) {
+    // Only reduce crit threshold if survivor luck exceeds monster luck
+    // 10 - netLuck gives us the minimum roll needed
+    // Math.max(2, ...) ensures we never go below 2
+    const criticalValue = Math.max(2, 10 - netLuck);
+    criticalText = criticalValue === 10 ? "Lantern 10" : `${criticalValue}+`;
   }
 
   return (
