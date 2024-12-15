@@ -51,9 +51,30 @@ const WoundCalculator = ({
   monsterLuck, setMonsterLuck,
   requiredRoll 
 }) => {
-  // Critical range is expanded by survivor luck and reduced by monster luck
-  const criticalRange = Math.max(2, 10 - luck + monsterLuck);
-  const criticalText = (luck > 0 || monsterLuck < 0) ? `${criticalRange}+` : "Lantern 10";
+  // Calculate if and when critical wounds are possible
+  let criticalText = "Lantern 10";
+  
+  // Start with base case - critical on lantern 10
+  let criticalValue = 10;
+  
+  // If survivor has positive luck, they can crit on lower rolls
+  if (luck > 0) {
+    criticalValue = Math.max(2, 10 - luck);
+  }
+  
+  // If monster has positive luck, it increases the required roll
+  if (monsterLuck > 0) {
+    criticalValue = criticalValue + monsterLuck;
+  }
+  
+  // If critical value exceeds 10, no crits are possible
+  if (criticalValue > 10) {
+    criticalText = "Not possible";
+  } else if (criticalValue === 10) {
+    criticalText = "Lantern 10";
+  } else {
+    criticalText = `${criticalValue}+`;
+  }
 
   return (
     <Card className="w-full h-full bg-gray-900 border-gray-700">
@@ -62,25 +83,25 @@ const WoundCalculator = ({
       </CardHeader>
       <CardContent className="p-3 h-full">
         <div className="flex flex-col h-full space-y-4">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-3 gap-2 mb-2">
             <StatInput 
-              label="Weapon Strength"
+              label="Weapon Str"
               value={weaponStrength}
               onChange={setWeaponStrength}
             />
             <StatInput 
-              label="Survivor Strength"
+              label="Survivor Str"
               value={survivorStrength}
               onChange={setSurvivorStrength}
             />
             <StatInput 
-              label="Monster Toughness"
+              label="Monster Tough"
               value={monsterToughness}
               onChange={setMonsterToughness}
             />
           </div>
           
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-2">
             <StatInput 
               label="Survivor Luck"
               value={luck}
