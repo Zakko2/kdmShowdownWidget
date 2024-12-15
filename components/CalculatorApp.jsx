@@ -90,7 +90,7 @@ const WoundCalculator = ({
             <h3 className="text-sm font-medium text-gray-400 mb-1">Required Roll</h3>
             <p className="text-4xl font-bold text-gray-100">{requiredRoll}+</p>
             <div className="space-y-1 mt-2 text-xs text-gray-500">
-              <p>Lantern 10 always wounds</p>
+              <p>1 always fails • Lantern 10 always wounds</p>
               <p>Critical Wound on: {criticalText}</p>
               <p>Critical wounds cancel all reactions</p>
             </div>
