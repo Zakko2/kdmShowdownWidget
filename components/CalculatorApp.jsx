@@ -5,13 +5,13 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Plus, Minus, Sword, Target } from 'lucide-react';
 
 const StatInput = ({ label, value, onChange }) => {
-  const increment = () => onChange(Math.min(value + 1, 10));
-  const decrement = () => onChange(Math.max(value - 1, -10));
+  const increment = () => onChange(Math.min(value + 1, 99));
+  const decrement = () => onChange(Math.max(value - 1, -99));
 
   return (
     <div className="flex flex-col items-center space-y-2">
       <label className="text-sm font-medium text-gray-300">{label}</label>
-      <div className="flex items-center  justify-center w-full space-x-3">
+      <div className="flex items-center justify-center w-full space-x-3">
         <button
           onClick={decrement}
           className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 transition-colors"
@@ -64,9 +64,9 @@ const WoundCalculator = () => {
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-center text-gray-200">Wound Calculator</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-8">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+      <CardContent className="p-3 h-full">
+        <div className="flex flex-col h-full space-y-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <StatInput 
               label="Weapon Strength"
               value={weaponStrength}
@@ -84,7 +84,7 @@ const WoundCalculator = () => {
             />
           </div>
           
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <StatInput 
               label="Luck"
               value={luck}
@@ -92,10 +92,10 @@ const WoundCalculator = () => {
             />
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-6 text-center">
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Required Roll</h3>
+          <div className="bg-gray-800 rounded-lg p-4 text-center mt-auto">
+            <h3 className="text-sm font-medium text-gray-400 mb-1">Required Roll</h3>
             <p className="text-4xl font-bold text-gray-100">{requiredRoll}+</p>
-            <div className="space-y-2 mt-4 text-xs text-gray-500">
+            <div className="space-y-1 mt-2 text-xs text-gray-500">
               <p>Lantern 10 always wounds</p>
               <p>Critical Wound on: {criticalText}</p>
               <p>Critical wounds cancel all reactions</p>
@@ -131,9 +131,9 @@ const HitCalculator = () => {
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-center text-gray-200">Hit Calculator</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-8">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+      <CardContent className="p-3 h-full">
+        <div className="flex flex-col h-full space-y-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <StatInput 
               label="Survivor Accuracy"
               value={survivorAccuracy}
@@ -151,7 +151,7 @@ const HitCalculator = () => {
             />
           </div>
           
-          <div className="space-y-2 border-t border-b border-gray-700 py-4">
+          <div className="border-t border-b border-gray-700 py-2">
             <Checkbox 
               id="blindSpot"
               label="Attacking from Blind Spot (+1 accuracy)"
@@ -166,10 +166,10 @@ const HitCalculator = () => {
             />
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-6 text-center">
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Required Roll</h3>
+          <div className="bg-gray-800 rounded-lg p-4 text-center mt-auto">
+            <h3 className="text-sm font-medium text-gray-400 mb-1">Required Roll</h3>
             <p className="text-4xl font-bold text-gray-100">{requiredRoll}+</p>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500 mt-1">
               Lantern 10 always hits • 1 always misses
             </p>
           </div>
@@ -183,16 +183,18 @@ const CalculatorApp = () => {
   const [currentPage, setCurrentPage] = useState('hit');
 
   return (
-    <div className="min-h-screen flex flex-col bg-black">
-      <div className="flex-1 p-4">
-        {currentPage === 'hit' ? <HitCalculator /> : <WoundCalculator />}
+    <div className="h-screen flex flex-col bg-black">
+      <div className="flex-1 flex flex-col h-[calc(100vh-64px)]">
+        <div className="flex-1 p-2 sm:p-4">
+          {currentPage === 'hit' ? <HitCalculator /> : <WoundCalculator />}
+        </div>
       </div>
       
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-700">
-        <div className="flex justify-around p-2">
+      <div className="h-16 bg-gray-900 border-t border-gray-700">
+        <div className="flex justify-around h-full">
           <button
             onClick={() => setCurrentPage('hit')}
-            className={`flex flex-col items-center p-2 rounded-lg flex-1 mx-1 ${
+            className={`flex flex-col items-center justify-center flex-1 mx-1 ${
               currentPage === 'hit' ? 'bg-gray-800 text-blue-400' : 'text-gray-400'
             }`}
           >
@@ -201,7 +203,7 @@ const CalculatorApp = () => {
           </button>
           <button
             onClick={() => setCurrentPage('wound')}
-            className={`flex flex-col items-center p-2 rounded-lg flex-1 mx-1 ${
+            className={`flex flex-col items-center justify-center flex-1 mx-1 ${
               currentPage === 'wound' ? 'bg-gray-800 text-blue-400' : 'text-gray-400'
             }`}
           >
