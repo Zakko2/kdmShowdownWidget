@@ -43,19 +43,13 @@ const Checkbox = ({ id, label, checked, onChange }) => (
   </div>
 );
 
-const WoundCalculator = () => {
-  const [weaponStrength, setWeaponStrength] = useState(0);
-  const [survivorStrength, setSurvivorStrength] = useState(0);
-  const [monsterToughness, setMonsterToughness] = useState(0);
-  const [luck, setLuck] = useState(0);
-  const [requiredRoll, setRequiredRoll] = useState(0);
-
-  React.useEffect(() => {
-    let required = monsterToughness - weaponStrength - survivorStrength;
-    required = Math.max(2, Math.min(9, required));
-    setRequiredRoll(required);
-  }, [weaponStrength, survivorStrength, monsterToughness]);
-
+const WoundCalculator = ({ 
+  weaponStrength, setWeaponStrength,
+  survivorStrength, setSurvivorStrength,
+  monsterToughness, setMonsterToughness,
+  luck, setLuck,
+  requiredRoll 
+}) => {
   const criticalRange = Math.max(1, 10 - luck);
   const criticalText = luck > 0 ? `${criticalRange}+` : "Lantern 10";
 
@@ -107,25 +101,14 @@ const WoundCalculator = () => {
   );
 };
 
-const HitCalculator = () => {
-  const [survivorAccuracy, setSurvivorAccuracy] = useState(0);
-  const [weaponAccuracy, setWeaponAccuracy] = useState(0);
-  const [monsterEvasion, setMonsterEvasion] = useState(0);
-  const [inBlindSpot, setInBlindSpot] = useState(false);
-  const [monsterKnockedDown, setMonsterKnockedDown] = useState(false);
-  const [requiredRoll, setRequiredRoll] = useState(0);
-
-  React.useEffect(() => {
-    if (monsterKnockedDown) {
-      setRequiredRoll(3);
-      return;
-    }
-
-    let total = weaponAccuracy + monsterEvasion - survivorAccuracy - (inBlindSpot ? 1 : 0);
-    total = Math.max(2, Math.min(10, total));
-    setRequiredRoll(total);
-  }, [survivorAccuracy, weaponAccuracy, monsterEvasion, inBlindSpot, monsterKnockedDown]);
-
+const HitCalculator = ({
+  survivorAccuracy, setSurvivorAccuracy,
+  weaponAccuracy, setWeaponAccuracy,
+  monsterEvasion, setMonsterEvasion,
+  inBlindSpot, setInBlindSpot,
+  monsterKnockedDown, setMonsterKnockedDown,
+  requiredRoll
+}) => {
   return (
     <Card className="w-full h-full bg-gray-900 border-gray-700">
       <CardHeader className="pb-2">
@@ -181,12 +164,72 @@ const HitCalculator = () => {
 
 const CalculatorApp = () => {
   const [currentPage, setCurrentPage] = useState('hit');
+  
+  // Hit calculator state
+  const [survivorAccuracy, setSurvivorAccuracy] = useState(0);
+  const [weaponAccuracy, setWeaponAccuracy] = useState(0);
+  const [monsterEvasion, setMonsterEvasion] = useState(0);
+  const [inBlindSpot, setInBlindSpot] = useState(false);
+  const [monsterKnockedDown, setMonsterKnockedDown] = useState(false);
+  const [hitRequiredRoll, setHitRequiredRoll] = useState(0);
+
+  // Wound calculator state
+  const [weaponStrength, setWeaponStrength] = useState(0);
+  const [survivorStrength, setSurvivorStrength] = useState(0);
+  const [monsterToughness, setMonsterToughness] = useState(0);
+  const [luck, setLuck] = useState(0);
+  const [woundRequiredRoll, setWoundRequiredRoll] = useState(0);
+
+  // Hit calculator effect
+  React.useEffect(() => {
+    if (monsterKnockedDown) {
+      setHitRequiredRoll(3);
+      return;
+    }
+
+    let total = weaponAccuracy + monsterEvasion - survivorAccuracy - (inBlindSpot ? 1 : 0);
+    total = Math.max(2, Math.min(10, total));
+    setHitRequiredRoll(total);
+  }, [survivorAccuracy, weaponAccuracy, monsterEvasion, inBlindSpot, monsterKnockedDown]);
+
+  // Wound calculator effect
+  React.useEffect(() => {
+    let required = monsterToughness - weaponStrength - survivorStrength;
+    required = Math.max(2, Math.min(9, required));
+    setWoundRequiredRoll(required);
+  }, [weaponStrength, survivorStrength, monsterToughness]);
 
   return (
     <div className="h-screen flex flex-col bg-black">
       <div className="flex-1 flex flex-col h-[calc(100vh-64px)]">
         <div className="flex-1 p-2 sm:p-4">
-          {currentPage === 'hit' ? <HitCalculator /> : <WoundCalculator />}
+          {currentPage === 'hit' ? (
+            <HitCalculator 
+              survivorAccuracy={survivorAccuracy}
+              setSurvivorAccuracy={setSurvivorAccuracy}
+              weaponAccuracy={weaponAccuracy}
+              setWeaponAccuracy={setWeaponAccuracy}
+              monsterEvasion={monsterEvasion}
+              setMonsterEvasion={setMonsterEvasion}
+              inBlindSpot={inBlindSpot}
+              setInBlindSpot={setInBlindSpot}
+              monsterKnockedDown={monsterKnockedDown}
+              setMonsterKnockedDown={setMonsterKnockedDown}
+              requiredRoll={hitRequiredRoll}
+            />
+          ) : (
+            <WoundCalculator 
+              weaponStrength={weaponStrength}
+              setWeaponStrength={setWeaponStrength}
+              survivorStrength={survivorStrength}
+              setSurvivorStrength={setSurvivorStrength}
+              monsterToughness={monsterToughness}
+              setMonsterToughness={setMonsterToughness}
+              luck={luck}
+              setLuck={setLuck}
+              requiredRoll={woundRequiredRoll}
+            />
+          )}
         </div>
       </div>
       
