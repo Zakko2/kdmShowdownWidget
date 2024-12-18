@@ -46,7 +46,8 @@ const Checkbox = ({ id, label, checked, onChange }) => (
 
 // New component for the persistent roll display
 const RollSummary = ({ hitRoll, woundRoll, currentPage }) => (
-  <div className="grid grid-cols-2 gap-4 p-4 bg-gray-800 rounded-t-lg border-b border-gray-700">
+      <div className="grid grid-cols-2 gap-2 p-3 bg-gray-800 rounded-t-lg border-b border-gray-700">
+
     <div className={`text-center p-2 rounded ${currentPage === 'hit' ? 'bg-gray-700' : ''}`}>
       <div className="flex items-center justify-center space-x-2">
         <Target className="w-5 h-5 text-gray-300" />
@@ -84,12 +85,12 @@ const WoundCalculator = ({
   }
 
   return (
-    <Card className="w-full h-full bg-gray-900 border-gray-700">
+    <Card className="w-full h-full bg-gray-900 border-gray-700 overflow-hidden flex flex-col">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-center text-gray-200">Wound Calculator</CardTitle>
       </CardHeader>
-      <CardContent className="p-3 h-full">
-        <div className="flex flex-col h-full space-y-4">
+      <CardContent className="p-3 flex-1 min-h-0 overflow-y-auto">
+        <div className="flex flex-col h-full space-y-3">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 mb-3">
             <StatInput 
               label="Weapon Strength"
@@ -233,14 +234,14 @@ const CalculatorApp = () => {
   }, [weaponStrength, survivorStrength, monsterToughness]);
 
   return (
-    <div className="h-screen flex flex-col bg-black">
-      <div className="flex-1 flex flex-col h-[calc(100vh-64px)]">
+    <div className="fixed inset-0 flex flex-col bg-black overflow-hidden">
+      <div className="flex flex-col flex-1">
         <RollSummary 
           hitRoll={hitRequiredRoll} 
           woundRoll={woundRequiredRoll}
           currentPage={currentPage}
         />
-        <div className="flex-1 p-2 sm:p-4">
+        <div className="flex-1 p-2 sm:p-4 min-h-0">
           {currentPage === 'hit' ? (
             <HitCalculator 
               survivorAccuracy={survivorAccuracy}
