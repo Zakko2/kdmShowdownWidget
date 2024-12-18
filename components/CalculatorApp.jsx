@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Plus, Minus, Sword, Target } from 'lucide-react';
 
+// ... [StatInput and Checkbox components remain unchanged]
 const StatInput = ({ label, value, onChange }) => {
   const increment = () => onChange(Math.min(value + 1, 99));
   const decrement = () => onChange(Math.max(value - 1, -99));
@@ -43,6 +44,27 @@ const Checkbox = ({ id, label, checked, onChange }) => (
   </div>
 );
 
+// New component for the persistent roll display
+const RollSummary = ({ hitRoll, woundRoll, currentPage }) => (
+  <div className="grid grid-cols-2 gap-4 p-4 bg-gray-800 rounded-t-lg border-b border-gray-700">
+    <div className={`text-center p-2 rounded ${currentPage === 'hit' ? 'bg-gray-700' : ''}`}>
+      <div className="flex items-center justify-center space-x-2">
+        <Target className="w-5 h-5 text-gray-300" />
+        <span className="text-sm font-medium text-gray-300">To Hit</span>
+      </div>
+      <p className="text-2xl font-bold text-gray-100 mt-1">{hitRoll}+</p>
+    </div>
+    <div className={`text-center p-2 rounded ${currentPage === 'wound' ? 'bg-gray-700' : ''}`}>
+      <div className="flex items-center justify-center space-x-2">
+        <Sword className="w-5 h-5 text-gray-300" />
+        <span className="text-sm font-medium text-gray-300">To Wound</span>
+      </div>
+      <p className="text-2xl font-bold text-gray-100 mt-1">{woundRoll}+</p>
+    </div>
+  </div>
+);
+
+// ... [WoundCalculator component remains unchanged]
 const WoundCalculator = ({ 
   weaponStrength, setWeaponStrength,
   survivorStrength, setSurvivorStrength,
@@ -51,19 +73,12 @@ const WoundCalculator = ({
   monsterLuck, setMonsterLuck,
   requiredRoll 
 }) => {
-  // Calculate if and when critical wounds are possible
   let criticalText = "Lantern 10";
-  
-  // Compare survivor and monster luck first
   const netLuck = luck - monsterLuck;
   
   if (monsterLuck > luck) {
-    // If monster luck exceeds survivor luck, no crits possible
     criticalText = "Not possible";
   } else if (netLuck > 0) {
-    // Only reduce crit threshold if survivor luck exceeds monster luck
-    // 10 - netLuck gives us the minimum roll needed
-    // Math.max(2, ...) ensures we never go below 2
     const criticalValue = Math.max(2, 10 - netLuck);
     criticalText = criticalValue === 10 ? "Lantern 10" : `${criticalValue}+`;
   }
@@ -77,17 +92,17 @@ const WoundCalculator = ({
         <div className="flex flex-col h-full space-y-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 mb-3">
             <StatInput 
-              label="Weapon Str"
+              label="Weapon Strength"
               value={weaponStrength}
               onChange={setWeaponStrength}
             />
             <StatInput 
-              label="Survivor Str"
+              label="Survivor Strength"
               value={survivorStrength}
               onChange={setSurvivorStrength}
             />
             <StatInput 
-              label="Monster Tough"
+              label="Monster Toughness"
               value={monsterToughness}
               onChange={setMonsterToughness}
             />
@@ -107,9 +122,7 @@ const WoundCalculator = ({
           </div>
 
           <div className="bg-gray-800 rounded-lg p-4 text-center mt-auto">
-            <h3 className="text-sm font-medium text-gray-400 mb-1">Required Roll</h3>
-            <p className="text-4xl font-bold text-gray-100">{requiredRoll}+</p>
-            <div className="space-y-1 mt-2 text-xs text-gray-500">
+            <div className="space-y-1 text-xs text-gray-500">
               <p>1 always fails • Lantern 10 always wounds</p>
               <p>Critical Wound on: {criticalText}</p>
               <p>Critical wounds cancel all reactions</p>
@@ -121,6 +134,7 @@ const WoundCalculator = ({
   );
 };
 
+// ... [HitCalculator component remains unchanged]
 const HitCalculator = ({
   survivorAccuracy, setSurvivorAccuracy,
   weaponAccuracy, setWeaponAccuracy,
@@ -170,9 +184,7 @@ const HitCalculator = ({
           </div>
 
           <div className="bg-gray-800 rounded-lg p-4 text-center mt-auto">
-            <h3 className="text-sm font-medium text-gray-400 mb-1">Required Roll</h3>
-            <p className="text-4xl font-bold text-gray-100">{requiredRoll}+</p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500">
               Lantern 10 always hits • 1 always misses
             </p>
           </div>
@@ -198,6 +210,7 @@ const CalculatorApp = () => {
   const [survivorStrength, setSurvivorStrength] = useState(0);
   const [monsterToughness, setMonsterToughness] = useState(0);
   const [luck, setLuck] = useState(0);
+  const [monsterLuck, setMonsterLuck] = useState(0);
   const [woundRequiredRoll, setWoundRequiredRoll] = useState(0);
 
   // Hit calculator effect
@@ -212,8 +225,6 @@ const CalculatorApp = () => {
     setHitRequiredRoll(total);
   }, [survivorAccuracy, weaponAccuracy, monsterEvasion, inBlindSpot, monsterKnockedDown]);
 
-  const [monsterLuck, setMonsterLuck] = useState(0);  // Add this with other wound calculator state
-
   // Wound calculator effect
   React.useEffect(() => {
     let required = monsterToughness - weaponStrength - survivorStrength;
@@ -224,6 +235,11 @@ const CalculatorApp = () => {
   return (
     <div className="h-screen flex flex-col bg-black">
       <div className="flex-1 flex flex-col h-[calc(100vh-64px)]">
+        <RollSummary 
+          hitRoll={hitRequiredRoll} 
+          woundRoll={woundRequiredRoll}
+          currentPage={currentPage}
+        />
         <div className="flex-1 p-2 sm:p-4">
           {currentPage === 'hit' ? (
             <HitCalculator 
