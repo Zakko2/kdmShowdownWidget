@@ -235,66 +235,42 @@ const CalculatorApp = () => {
 
   return (
     <div className="fixed inset-0 flex flex-col bg-black overflow-hidden">
-      <div className="flex flex-col flex-1">
-        <RollSummary 
-          hitRoll={hitRequiredRoll} 
-          woundRoll={woundRequiredRoll}
-          currentPage={currentPage}
-        />
-        <div className="flex-1 p-2 sm:p-4 min-h-0">
-          {currentPage === 'hit' ? (
-            <HitCalculator 
-              survivorAccuracy={survivorAccuracy}
-              setSurvivorAccuracy={setSurvivorAccuracy}
-              weaponAccuracy={weaponAccuracy}
-              setWeaponAccuracy={setWeaponAccuracy}
-              monsterEvasion={monsterEvasion}
-              setMonsterEvasion={setMonsterEvasion}
-              inBlindSpot={inBlindSpot}
-              setInBlindSpot={setInBlindSpot}
-              monsterKnockedDown={monsterKnockedDown}
-              setMonsterKnockedDown={setMonsterKnockedDown}
-              requiredRoll={hitRequiredRoll}
-            />
-          ) : (
-            <WoundCalculator 
-              weaponStrength={weaponStrength}
-              setWeaponStrength={setWeaponStrength}
-              survivorStrength={survivorStrength}
-              setSurvivorStrength={setSurvivorStrength}
-              monsterToughness={monsterToughness}
-              setMonsterToughness={setMonsterToughness}
-              luck={luck}
-              setLuck={setLuck}
-              monsterLuck={monsterLuck}
-              setMonsterLuck={setMonsterLuck}
-              requiredRoll={woundRequiredRoll}
-            />
-          )}
-        </div>
-      </div>
-      
-      <div className="h-16 bg-gray-900 border-t border-gray-700">
-        <div className="flex justify-around h-full">
-          <button
-            onClick={() => setCurrentPage('hit')}
-            className={`flex flex-col items-center justify-center flex-1 mx-1 ${
-              currentPage === 'hit' ? 'bg-gray-800 text-blue-400' : 'text-gray-400'
-            }`}
-          >
-            <Target className="w-6 h-6" />
-            <span className="text-sm mt-1">To Hit</span>
-          </button>
-          <button
-            onClick={() => setCurrentPage('wound')}
-            className={`flex flex-col items-center justify-center flex-1 mx-1 ${
-              currentPage === 'wound' ? 'bg-gray-800 text-blue-400' : 'text-gray-400'
-            }`}
-          >
-            <Sword className="w-6 h-6" />
-            <span className="text-sm mt-1">To Wound</span>
-          </button>
-        </div>
+      <RollSummary 
+        hitRoll={hitRequiredRoll} 
+        woundRoll={woundRequiredRoll}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
+      <div className="flex-1 p-2 sm:p-4 min-h-0">
+        {currentPage === 'hit' ? (
+          <HitCalculator 
+            survivorAccuracy={survivorAccuracy}
+            setSurvivorAccuracy={setSurvivorAccuracy}
+            weaponAccuracy={weaponAccuracy}
+            setWeaponAccuracy={setWeaponAccuracy}
+            monsterEvasion={monsterEvasion}
+            setMonsterEvasion={setMonsterEvasion}
+            inBlindSpot={inBlindSpot}
+            setInBlindSpot={setInBlindSpot}
+            monsterKnockedDown={monsterKnockedDown}
+            setMonsterKnockedDown={setMonsterKnockedDown}
+            requiredRoll={hitRequiredRoll}
+          />
+        ) : (
+          <WoundCalculator 
+            weaponStrength={weaponStrength}
+            setWeaponStrength={setWeaponStrength}
+            survivorStrength={survivorStrength}
+            setSurvivorStrength={setSurvivorStrength}
+            monsterToughness={monsterToughness}
+            setMonsterToughness={setMonsterToughness}
+            luck={luck}
+            setLuck={setLuck}
+            monsterLuck={monsterLuck}
+            setMonsterLuck={setMonsterLuck}
+            requiredRoll={woundRequiredRoll}
+          />
+        )}
       </div>
     </div>
   );
