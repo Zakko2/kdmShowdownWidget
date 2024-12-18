@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Plus, Minus, Sword, Target } from 'lucide-react';
 
-// ... [StatInput and Checkbox components remain unchanged]
 const StatInput = ({ label, value, onChange }) => {
   const increment = () => onChange(Math.min(value + 1, 99));
   const decrement = () => onChange(Math.max(value - 1, -99));
@@ -44,28 +43,39 @@ const Checkbox = ({ id, label, checked, onChange }) => (
   </div>
 );
 
-// New component for the persistent roll display
-const RollSummary = ({ hitRoll, woundRoll, currentPage }) => (
-      <div className="grid grid-cols-2 gap-2 p-3 bg-gray-800 rounded-t-lg border-b border-gray-700">
-
-    <div className={`text-center p-2 rounded ${currentPage === 'hit' ? 'bg-gray-700' : ''}`}>
+const RollSummary = ({ hitRoll, woundRoll, currentPage, setCurrentPage }) => (
+  <div className="grid grid-cols-2 gap-2 p-2 bg-gray-800">
+    <button
+      onClick={() => setCurrentPage('hit')}
+      className={`text-center p-3 rounded transition-colors ${
+        currentPage === 'hit' 
+          ? 'bg-gray-700 ring-1 ring-blue-500' 
+          : 'hover:bg-gray-700/50'
+      }`}
+    >
       <div className="flex items-center justify-center space-x-2">
         <Target className="w-5 h-5 text-gray-300" />
         <span className="text-sm font-medium text-gray-300">To Hit</span>
       </div>
       <p className="text-2xl font-bold text-gray-100 mt-1">{hitRoll}+</p>
-    </div>
-    <div className={`text-center p-2 rounded ${currentPage === 'wound' ? 'bg-gray-700' : ''}`}>
+    </button>
+    <button
+      onClick={() => setCurrentPage('wound')}
+      className={`text-center p-3 rounded transition-colors ${
+        currentPage === 'wound' 
+          ? 'bg-gray-700 ring-1 ring-blue-500' 
+          : 'hover:bg-gray-700/50'
+      }`}
+    >
       <div className="flex items-center justify-center space-x-2">
         <Sword className="w-5 h-5 text-gray-300" />
         <span className="text-sm font-medium text-gray-300">To Wound</span>
       </div>
       <p className="text-2xl font-bold text-gray-100 mt-1">{woundRoll}+</p>
-    </div>
+    </button>
   </div>
 );
 
-// ... [WoundCalculator component remains unchanged]
 const WoundCalculator = ({ 
   weaponStrength, setWeaponStrength,
   survivorStrength, setSurvivorStrength,
@@ -135,7 +145,6 @@ const WoundCalculator = ({
   );
 };
 
-// ... [HitCalculator component remains unchanged]
 const HitCalculator = ({
   survivorAccuracy, setSurvivorAccuracy,
   weaponAccuracy, setWeaponAccuracy,
@@ -145,12 +154,12 @@ const HitCalculator = ({
   requiredRoll
 }) => {
   return (
-    <Card className="w-full h-full bg-gray-900 border-gray-700">
+    <Card className="w-full h-full bg-gray-900 border-gray-700 overflow-hidden flex flex-col">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-center text-gray-200">Hit Calculator</CardTitle>
       </CardHeader>
-      <CardContent className="p-3 h-full">
-        <div className="flex flex-col h-full space-y-4">
+      <CardContent className="p-3 flex-1 min-h-0 overflow-y-auto">
+        <div className="flex flex-col h-full space-y-3">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <StatInput 
               label="Survivor Accuracy"
@@ -239,7 +248,7 @@ const CalculatorApp = () => {
         hitRoll={hitRequiredRoll} 
         woundRoll={woundRequiredRoll}
         currentPage={currentPage}
-        onPageChange={setCurrentPage}
+        setCurrentPage={setCurrentPage}
       />
       <div className="flex-1 p-2 sm:p-4 min-h-0">
         {currentPage === 'hit' ? (
