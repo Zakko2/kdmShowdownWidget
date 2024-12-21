@@ -1,8 +1,111 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Plus, Minus, Sword, Target } from 'lucide-react';
+import { Plus, Minus, Sword, Target, Share2, Copy, ChevronUp } from 'lucide-react';
+
+const BottomSheet = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [copySuccess, setCopySuccess] = useState('');
+  const version = "v0.1.0";
+
+  const handleShare = async () => {
+    try {
+      await navigator.share({
+        title: 'KDM Hit Calculator',
+        text: 'Check out this useful calculator for Kingdom Death: Monster!',
+        url: window.location.href
+      });
+    } catch (error) {
+      console.log('Share failed:', error);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopySuccess('Copied!');
+      setTimeout(() => setCopySuccess(''), 2000);
+    } catch (err) {
+      setCopySuccess('Failed to copy');
+    }
+  };
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 flex flex-col items-center">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-12 h-1 rounded-full bg-gray-700 mb-1 mt-1"
+        aria-label="Toggle info panel"
+      />
+      
+      <div 
+        className={`w-full bg-gray-800 border-t border-gray-700 transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-y-0' : 'translate-y-full'
+        }`}
+      >
+        <div className="p-4 flex flex-col items-center space-y-3">
+          {navigator.share && (
+            <button
+              onClick={handleShare}
+              className="flex items-center space-x-2 px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 transition-colors w-48"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>Share</span>
+            </button>
+          )}
+          
+          <button
+            onClick={handleCopyLink}
+            className="flex items-center space-x-2 px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 transition-colors w-48"
+          >
+            <Copy className="w-4 h-4" />
+            <span>{copySuccess || 'Copy Link'}</span>
+          </button>
+
+          <div className="text-sm text-gray-400 pt-2">
+            {version}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ShareButton = () => {
+  const [isPwa, setIsPwa] = useState(false);
+
+  useEffect(() => {
+    // Check if running as installed PWA
+    const isStandalone = window.navigator.standalone || // iOS
+      window.matchMedia('(display-mode: standalone)').matches; // Android/Desktop
+    setIsPwa(isStandalone);
+  }, []);
+
+  const handleShare = async () => {
+    try {
+      await navigator.share({
+        title: 'KDM Hit Calculator',
+        text: 'Check out this useful calculator for Kingdom Death: Monster!',
+        url: window.location.href
+      });
+    } catch (error) {
+      console.log('Share failed:', error);
+    }
+  };
+
+  if (!isPwa || !navigator.share) return null;
+
+  return (
+    <button
+      onClick={handleShare}
+      className="fixed bottom-4 right-4 w-12 h-12 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 transition-colors shadow-lg"
+      aria-label="Share app"
+    >
+      <Share2 className="w-6 h-6 text-white" />
+    </button>
+  );
+};
 
 const StatInput = ({ label, value, onChange }) => {
   const increment = () => onChange(Math.min(value + 1, 99));
@@ -281,6 +384,8 @@ const CalculatorApp = () => {
           />
         )}
       </div>
+      <BottomSheet />
+      <ShareButton />
     </div>
   );
 };
