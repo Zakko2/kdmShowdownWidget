@@ -7,7 +7,48 @@ import { Plus, Minus, Sword, Target, Share2, Copy, ChevronUp } from 'lucide-reac
 const BottomSheet = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [copySuccess, setCopySuccess] = useState('');
+  const [dragStartY, setDragStartY] = useState(null);
+  const [currentTranslateY, setCurrentTranslateY] = useState(100); // percentage
+  const [isDragging, setIsDragging] = useState(false);
   const version = "v0.1.0";
+
+  // Handle both touch and mouse events
+  const handleDragStart = (e) => {
+    const y = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+    setDragStartY({ y, translateY: currentTranslateY });
+    setIsDragging(true);
+  };
+
+  const handleDragMove = (e) => {
+    if (!dragStartY) return;
+    
+    const y = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+    const deltaY = y - dragStartY.y;
+    const newTranslateY = Math.max(0, Math.min(100, dragStartY.translateY + (deltaY / window.innerHeight * 100)));
+    
+    setCurrentTranslateY(newTranslateY);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setDragStartY(null);
+    // Snap to either fully open or closed based on current position
+    if (currentTranslateY < 50) {
+      setCurrentTranslateY(0);
+      setIsOpen(true);
+    } else {
+      setCurrentTranslateY(100);
+      setIsOpen(false);
+    }
+  };
+
+  // Handle click on the handle for non-drag interaction
+  const handleClick = () => {
+    if (!isDragging) {
+      setCurrentTranslateY(isOpen ? 100 : 0);
+      setIsOpen(!isOpen);
+    }
+  };
 
   const handleShare = async () => {
     try {
@@ -33,19 +74,30 @@ const BottomSheet = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-10 flex flex-col items-center">
-      <div className="w-full flex justify-center">
-        <button 
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-12 h-1 rounded-full bg-gray-700 hover:bg-gray-600 mb-2"
-          aria-label="Toggle info panel"
-        />
-      </div>
-      
+      {/* Separate handle element that stays visible */}
       <div 
-        className={`w-full bg-gray-800 border-t border-gray-700 transition-transform duration-300 ease-in-out ${
-          isOpen ? 'translate-y-0' : 'translate-y-full'
-        }`}
+        className="w-12 h-1 rounded-full bg-gray-700 mb-2 cursor-pointer hover:bg-gray-600 transition-colors"
+        onClick={handleClick}
+      />
+      
+      {/* Main sliding panel */}
+      <div 
+        className="w-full bg-gray-800 border-t border-gray-700 transition-transform duration-300 ease-in-out select-none"
+        style={{ transform: `translateY(${currentTranslateY}%)` }}
+        onTouchStart={handleDragStart}
+        onTouchMove={handleDragMove}
+        onTouchEnd={handleDragEnd}
+        onMouseDown={handleDragStart}
+        onMouseMove={isDragging ? handleDragMove : undefined}
+        onMouseUp={handleDragEnd}
+        onMouseLeave={isDragging ? handleDragEnd : undefined}
       >
+        <div 
+          className="w-full flex justify-center cursor-pointer hover:bg-gray-700/50 transition-colors"
+          onClick={handleClick}
+        >
+          <div className="w-12 h-1 rounded-full bg-gray-700 my-2" />
+        </div>
         <div className="p-4 flex flex-col items-center space-y-3">
           {navigator.share && (
             <button
