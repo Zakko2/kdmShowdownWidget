@@ -32,12 +32,14 @@ const BottomSheet = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 flex flex-col items-center">
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-12 h-1 rounded-full bg-gray-700 mb-1 mt-1"
-        aria-label="Toggle info panel"
-      />
+    <div className="fixed bottom-0 left-0 right-0 z-10 flex flex-col items-center">
+      <div className="w-full flex justify-center">
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-12 h-1 rounded-full bg-gray-700 hover:bg-gray-600 mb-2"
+          aria-label="Toggle info panel"
+        />
+      </div>
       
       <div 
         className={`w-full bg-gray-800 border-t border-gray-700 transition-transform duration-300 ease-in-out ${
@@ -353,7 +355,7 @@ const CalculatorApp = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
-      <div className="flex-1 p-2 sm:p-4 min-h-0">
+      <div className="flex-1 p-2 sm:p-4 min-h-0 pb-16">
         {currentPage === 'hit' ? (
           <HitCalculator 
             survivorAccuracy={survivorAccuracy}
@@ -385,7 +387,6 @@ const CalculatorApp = () => {
         )}
       </div>
       <BottomSheet />
-      <ShareButton />
     </div>
   );
 };
