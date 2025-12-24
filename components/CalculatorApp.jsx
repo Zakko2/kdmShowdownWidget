@@ -1,75 +1,134 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Plus, Minus, Sword, Target, Share2, Copy, Zap, ZapOff } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
-const StatInput = ({ label, value, onChange }) => {
+// --- Theme Configuration ---
+const THEMES = [
+  {
+    name: 'Mint',
+    baseColor: '#BDD3C1', // Pale Sage
+    bgClass: 'bg-[#BDD3C1]',
+    textPrimary: 'text-gray-900',
+    textSecondary: 'text-gray-700',
+    cardBg: 'bg-white/40',
+    buttonBg: 'bg-emerald-900/10 hover:bg-emerald-900/20',
+    buttonIcon: 'text-emerald-900',
+    activeRing: 'ring-emerald-700',
+    dotActive: 'bg-emerald-900',
+    dotInactive: 'bg-emerald-900/30'
+  },
+  {
+    name: 'Blue',
+    baseColor: '#6A95D4', // Cornflower
+    bgClass: 'bg-[#6A95D4]',
+    textPrimary: 'text-gray-950',
+    textSecondary: 'text-gray-800',
+    cardBg: 'bg-white/30',
+    buttonBg: 'bg-blue-900/10 hover:bg-blue-900/20',
+    buttonIcon: 'text-blue-900',
+    activeRing: 'ring-blue-800',
+    dotActive: 'bg-blue-900',
+    dotInactive: 'bg-blue-900/30'
+  },
+  {
+    name: 'Brown',
+    baseColor: '#6D5831', // Deep Umber
+    bgClass: 'bg-[#6D5831]',
+    textPrimary: 'text-gray-50',
+    textSecondary: 'text-gray-300',
+    cardBg: 'bg-black/30',
+    buttonBg: 'bg-yellow-100/10 hover:bg-yellow-100/20',
+    buttonIcon: 'text-yellow-100',
+    activeRing: 'ring-yellow-500',
+    dotActive: 'bg-yellow-100',
+    dotInactive: 'bg-yellow-100/30'
+  },
+  {
+    name: 'Red',
+    baseColor: '#C97B63', // Terracotta
+    bgClass: 'bg-[#C97B63]',
+    textPrimary: 'text-gray-950',
+    textSecondary: 'text-gray-900',
+    cardBg: 'bg-white/30',
+    buttonBg: 'bg-red-900/10 hover:bg-red-900/20',
+    buttonIcon: 'text-red-900',
+    activeRing: 'ring-red-900',
+    dotActive: 'bg-red-900',
+    dotInactive: 'bg-red-900/30'
+  }
+];
+
+// --- Shared Components ---
+
+const StatInput = ({ label, value, onChange, theme }) => {
   const increment = () => onChange(Math.min(value + 1, 99));
   const decrement = () => onChange(Math.max(value - 1, -99));
 
   return (
     <div className="flex flex-col items-center space-y-2">
-      <label className="text-sm font-medium text-gray-300">{label}</label>
+      <label className={`text-sm font-medium ${theme.textSecondary}`}>{label}</label>
       <div className="flex items-center justify-center w-full space-x-3">
         <button
           onClick={decrement}
-          className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 transition-colors"
+          className={`w-12 h-12 flex items-center justify-center rounded-full transition-colors ${theme.buttonBg}`}
         >
-          <Minus className="w-6 h-6 text-gray-300" />
+          <Minus className={`w-6 h-6 ${theme.buttonIcon}`} />
         </button>
-        <div className="w-12 text-center text-xl font-bold text-gray-200">{value}</div>
+        <div className={`w-12 text-center text-xl font-bold ${theme.textPrimary}`}>{value}</div>
         <button
           onClick={increment}
-          className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 transition-colors"
+          className={`w-12 h-12 flex items-center justify-center rounded-full transition-colors ${theme.buttonBg}`}
         >
-          <Plus className="w-6 h-6 text-gray-300" />
+          <Plus className={`w-6 h-6 ${theme.buttonIcon}`} />
         </button>
       </div>
     </div>
   );
 };
 
-const Checkbox = ({ id, label, checked, onChange }) => (
+const Checkbox = ({ id, label, checked, onChange, theme }) => (
   <div className="flex items-center space-x-2 p-2">
     <input
       type="checkbox"
       id={id}
       checked={checked}
       onChange={(e) => onChange(e.target.checked)}
-      className="h-6 w-6 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500"
+      className={`h-6 w-6 rounded border-gray-500 bg-opacity-20 ${theme.buttonBg} focus:${theme.activeRing}`}
     />
-    <label htmlFor={id} className="text-base text-gray-300">{label}</label>
+    <label htmlFor={id} className={`text-base ${theme.textSecondary}`}>{label}</label>
   </div>
 );
 
-const RollSummary = ({ hitRoll, woundRoll, currentPage, setCurrentPage }) => (
-  <div className="grid grid-cols-2 gap-2 p-2 bg-gray-800">
+const RollSummary = ({ hitRoll, woundRoll, currentPage, setCurrentPage, theme }) => (
+  <div className={`grid grid-cols-2 gap-2 p-2 ${theme.cardBg} backdrop-blur-sm shadow-sm rounded-b-xl mb-4 mx-2`}>
     <button
       onClick={() => setCurrentPage('hit')}
-      className={`text-center p-3 rounded transition-colors ${currentPage === 'hit'
-          ? 'bg-gray-700 ring-1 ring-blue-500'
-          : 'hover:bg-gray-700/50'
+      className={`text-center p-3 rounded-lg transition-all ${currentPage === 'hit'
+        ? `${theme.buttonBg} ring-2 ${theme.activeRing}`
+        : 'hover:bg-black/5'
         }`}
     >
       <div className="flex items-center justify-center space-x-2">
-        <Target className="w-5 h-5 text-gray-300" />
-        <span className="text-sm font-medium text-gray-300">To Hit</span>
+        <Target className={`w-5 h-5 ${theme.textSecondary}`} />
+        <span className={`text-sm font-medium ${theme.textSecondary}`}>To Hit</span>
       </div>
-      <p className="text-2xl font-bold text-gray-100 mt-1">{hitRoll}+</p>
+      <p className={`text-2xl font-bold ${theme.textPrimary} mt-1`}>{hitRoll}+</p>
     </button>
     <button
       onClick={() => setCurrentPage('wound')}
-      className={`text-center p-3 rounded transition-colors ${currentPage === 'wound'
-          ? 'bg-gray-700 ring-1 ring-blue-500'
-          : 'hover:bg-gray-700/50'
+      className={`text-center p-3 rounded-lg transition-all ${currentPage === 'wound'
+        ? `${theme.buttonBg} ring-2 ${theme.activeRing}`
+        : 'hover:bg-black/5'
         }`}
     >
       <div className="flex items-center justify-center space-x-2">
-        <Sword className="w-5 h-5 text-gray-300" />
-        <span className="text-sm font-medium text-gray-300">To Wound</span>
+        <Sword className={`w-5 h-5 ${theme.textSecondary}`} />
+        <span className={`text-sm font-medium ${theme.textSecondary}`}>To Wound</span>
       </div>
-      <p className="text-2xl font-bold text-gray-100 mt-1">{woundRoll}+</p>
+      <p className={`text-2xl font-bold ${theme.textPrimary} mt-1`}>{woundRoll}+</p>
     </button>
   </div>
 );
@@ -80,7 +139,7 @@ const WoundCalculator = ({
   monsterToughness, setMonsterToughness,
   luck, setLuck,
   monsterLuck, setMonsterLuck,
-  requiredRoll
+  theme
 }) => {
   let criticalText = "Lantern 10";
   const netLuck = luck - monsterLuck;
@@ -93,9 +152,9 @@ const WoundCalculator = ({
   }
 
   return (
-    <Card className="w-full h-full bg-gray-900 border-gray-700 overflow-hidden flex flex-col">
+    <Card className={`w-full h-full border-none shadow-lg ${theme.cardBg} backdrop-blur-md overflow-hidden flex flex-col`}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl text-center text-gray-200">Wound Calculator</CardTitle>
+        <CardTitle className={`text-xl text-center ${theme.textPrimary}`}>Wound Calculator</CardTitle>
       </CardHeader>
       <CardContent className="p-3 flex-1 min-h-0 overflow-y-auto">
         <div className="flex flex-col h-full space-y-3">
@@ -104,16 +163,19 @@ const WoundCalculator = ({
               label="Weapon Strength"
               value={weaponStrength}
               onChange={setWeaponStrength}
+              theme={theme}
             />
             <StatInput
               label="Survivor Strength"
               value={survivorStrength}
               onChange={setSurvivorStrength}
+              theme={theme}
             />
             <StatInput
               label="Monster Toughness"
               value={monsterToughness}
               onChange={setMonsterToughness}
+              theme={theme}
             />
           </div>
 
@@ -122,16 +184,18 @@ const WoundCalculator = ({
               label="Survivor Luck"
               value={luck}
               onChange={setLuck}
+              theme={theme}
             />
             <StatInput
               label="Monster Luck"
               value={monsterLuck}
               onChange={setMonsterLuck}
+              theme={theme}
             />
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-4 text-center mt-auto">
-            <div className="space-y-1 text-xs text-gray-500">
+          <div className={`rounded-lg p-4 text-center mt-auto ${theme.buttonBg}`}>
+            <div className={`space-y-1 text-xs ${theme.textSecondary}`}>
               <p>1 always fails • Lantern 10 always wounds</p>
               <p>Critical Wound on: {criticalText}</p>
               <p>Critical wounds cancel all reactions</p>
@@ -149,12 +213,12 @@ const HitCalculator = ({
   monsterEvasion, setMonsterEvasion,
   inBlindSpot, setInBlindSpot,
   monsterKnockedDown, setMonsterKnockedDown,
-  requiredRoll
+  theme
 }) => {
   return (
-    <Card className="w-full h-full bg-gray-900 border-gray-700 overflow-hidden flex flex-col">
+    <Card className={`w-full h-full border-none shadow-lg ${theme.cardBg} backdrop-blur-md overflow-hidden flex flex-col`}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl text-center text-gray-200">Hit Calculator</CardTitle>
+        <CardTitle className={`text-xl text-center ${theme.textPrimary}`}>Hit Calculator</CardTitle>
       </CardHeader>
       <CardContent className="p-3 flex-1 min-h-0 overflow-y-auto">
         <div className="flex flex-col h-full space-y-3">
@@ -163,36 +227,41 @@ const HitCalculator = ({
               label="Survivor Accuracy"
               value={survivorAccuracy}
               onChange={setSurvivorAccuracy}
+              theme={theme}
             />
             <StatInput
               label="Weapon Accuracy"
               value={weaponAccuracy}
               onChange={setWeaponAccuracy}
+              theme={theme}
             />
             <StatInput
               label="Monster Evasion"
               value={monsterEvasion}
               onChange={setMonsterEvasion}
+              theme={theme}
             />
           </div>
 
-          <div className="border-t border-b border-gray-700 py-2">
+          <div className={`border-t border-b border-black/10 py-2`}>
             <Checkbox
               id="blindSpot"
               label="Attacking from Blind Spot (+1 accuracy)"
               checked={inBlindSpot}
               onChange={setInBlindSpot}
+              theme={theme}
             />
             <Checkbox
               id="knockedDown"
               label="Monster is Knocked Down (hits on 3+)"
               checked={monsterKnockedDown}
               onChange={setMonsterKnockedDown}
+              theme={theme}
             />
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-4 text-center mt-auto">
-            <p className="text-xs text-gray-500">
+          <div className={`rounded-lg p-4 text-center mt-auto ${theme.buttonBg}`}>
+            <p className={`text-xs ${theme.textSecondary}`}>
               Lantern 10 always hits • 1 always misses
             </p>
           </div>
@@ -202,54 +271,93 @@ const HitCalculator = ({
   );
 };
 
+// --- Main Application ---
 const CalculatorApp = () => {
   const [currentPage, setCurrentPage] = useState('hit');
   const [isOpen, setIsOpen] = useState(false);
   const [copySuccess, setCopySuccess] = useState('');
-  const version = "v0.1.0";
+  const [activeSurvivorIndex, setActiveSurvivorIndex] = useState(0);
+  const version = "v0.2.0";
 
-  // Hit calculator state
-  const [survivorAccuracy, setSurvivorAccuracy] = useState(0);
-  const [weaponAccuracy, setWeaponAccuracy] = useState(0);
-  const [monsterEvasion, setMonsterEvasion] = useState(0);
-  const [inBlindSpot, setInBlindSpot] = useState(false);
-  const [monsterKnockedDown, setMonsterKnockedDown] = useState(false);
-  const [hitRequiredRoll, setHitRequiredRoll] = useState(0);
+  // Initial State Factory
+  const createSurvivor = () => ({
+    accuracy: 0,
+    strength: 0,
+    luck: 0,
+    weaponAccuracy: 0,
+    weaponStrength: 0,
+    blindSpot: false
+  });
 
-  // Wound calculator state
-  const [weaponStrength, setWeaponStrength] = useState(0);
-  const [survivorStrength, setSurvivorStrength] = useState(0);
-  const [monsterToughness, setMonsterToughness] = useState(0);
-  const [luck, setLuck] = useState(0);
-  const [monsterLuck, setMonsterLuck] = useState(0);
-  const [woundRequiredRoll, setWoundRequiredRoll] = useState(0);
+  // Unique State: Survivors
+  const [survivors, setSurvivors] = useState([
+    createSurvivor(),
+    createSurvivor(),
+    createSurvivor(),
+    createSurvivor()
+  ]);
+
+  // Shared State: Monster
+  const [monster, setMonster] = useState({
+    toughness: 0,
+    evasion: 0,
+    luck: 0,
+    knockedDown: false
+  });
 
   // Wake Lock state
   const [isWakeLockActive, setIsWakeLockActive] = useState(false);
-  const wakeLockRef = React.useRef(null);
+  const wakeLockRef = useRef(null);
   const [wakeLockSupported, setWakeLockSupported] = useState(false);
 
-  // Hit calculator effect
-  React.useEffect(() => {
-    if (monsterKnockedDown) {
-      setHitRequiredRoll(3);
-      return;
+  // Helpers
+  const currentSurvivor = survivors[activeSurvivorIndex];
+  const theme = THEMES[activeSurvivorIndex];
+
+  const updateSurvivor = (field, value) => {
+    setSurvivors(prev => {
+      const newSurvivors = [...prev];
+      newSurvivors[activeSurvivorIndex] = {
+        ...newSurvivors[activeSurvivorIndex],
+        [field]: value
+      };
+      return newSurvivors;
+    });
+  };
+
+  const updateMonster = (field, value) => {
+    setMonster(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Derived Calculations
+  const calculateHitRoll = () => {
+    if (monster.knockedDown) return 3;
+    let total = currentSurvivor.weaponAccuracy + monster.evasion - currentSurvivor.accuracy - (currentSurvivor.blindSpot ? 1 : 0);
+    return Math.max(2, Math.min(10, total));
+  };
+
+  const calculateWoundRoll = () => {
+    let required = monster.toughness - currentSurvivor.weaponStrength - currentSurvivor.strength;
+    return Math.max(2, Math.min(9, required));
+  };
+
+  const hitRequiredRoll = calculateHitRoll();
+  const woundRequiredRoll = calculateWoundRoll();
+
+  // Navigation Logic
+  const handleDragEnd = (event, info) => {
+    const threshold = 50;
+    if (info.offset.x < -threshold) {
+      // Swipe Left -> Next
+      setActiveSurvivorIndex((prev) => (prev + 1) % 4);
+    } else if (info.offset.x > threshold) {
+      // Swipe Right -> Prev
+      setActiveSurvivorIndex((prev) => (prev - 1 + 4) % 4);
     }
-
-    let total = weaponAccuracy + monsterEvasion - survivorAccuracy - (inBlindSpot ? 1 : 0);
-    total = Math.max(2, Math.min(10, total));
-    setHitRequiredRoll(total);
-  }, [survivorAccuracy, weaponAccuracy, monsterEvasion, inBlindSpot, monsterKnockedDown]);
-
-  // Wound calculator effect
-  React.useEffect(() => {
-    let required = monsterToughness - weaponStrength - survivorStrength;
-    required = Math.max(2, Math.min(9, required));
-    setWoundRequiredRoll(required);
-  }, [weaponStrength, survivorStrength, monsterToughness]);
+  };
 
   // Wake Lock Logic
-  React.useEffect(() => {
+  useEffect(() => {
     if ('wakeLock' in navigator) {
       setWakeLockSupported(true);
     }
@@ -260,63 +368,28 @@ const CalculatorApp = () => {
       const lock = await navigator.wakeLock.request('screen');
       wakeLockRef.current = lock;
       setIsWakeLockActive(true);
-
       lock.addEventListener('release', () => {
         setIsWakeLockActive(false);
         wakeLockRef.current = null;
       });
     } catch (err) {
-      console.error(`${err.name}, ${err.message}`);
+      console.error(err);
       setIsWakeLockActive(false);
     }
   };
 
   const releaseWakeLock = async () => {
     if (wakeLockRef.current) {
-      try {
-        await wakeLockRef.current.release();
-        wakeLockRef.current = null;
-        setIsWakeLockActive(false);
-      } catch (err) {
-        console.error(`${err.name}, ${err.message}`);
-      }
+      await wakeLockRef.current.release();
+      wakeLockRef.current = null;
+      setIsWakeLockActive(false);
     }
   };
 
   const toggleWakeLock = () => {
-    if (isWakeLockActive) {
-      releaseWakeLock();
-    } else {
-      requestWakeLock();
-    }
+    if (isWakeLockActive) releaseWakeLock();
+    else requestWakeLock();
   };
-
-  // Re-acquire lock when page becomes visible if it was active (or intended to be)
-  // Note: Simplification - if user wanted it active, we try to get it back.
-  // We'll trust the state 'isWakeLockActive' to reflect current reality, 
-  // but if we lose it due to visibility, we might want to automatically restore it.
-  // A better pattern is tracking 'enabled' vs 'active'. For now, let's just use the toggle.
-  // Actually, standard behavior is: if visible again, re-request if we want it.
-  // We need a separate state for "user wants wake lock".
-  // Let's rely on manual re-enabling for now to avoid complexity, OR
-  // better: if the user enabled it, we want it to persist across visibility changes.
-
-  // Refined Logic:
-  // We will add a 'wantsWakeLock' state if we want persistence, but for MVP simple toggle is okay.
-  // However, mostly on phones, switching apps releases it. Coming back, it's GONE.
-  // So the user would have to tap it again. That's acceptable for a first pass.
-  // But let's try to be smart:
-  React.useEffect(() => {
-    const handleVisibilityChange = async () => {
-      if (wakeLockRef.current !== null && document.visibilityState === 'visible') {
-        // It generally shouldn't be null if it wasn't released? 
-        // Actually the system releases it on visibility change (hidden).
-        // So wakeLockRef.current becomes null (via the release listener).
-        // So we can't check wakeLockRef.current.
-        // We need a separate 'enabled' boolean tracking user intent.
-      }
-    };
-  }, []);
 
   const handleShare = async () => {
     if (typeof window !== 'undefined' && window.navigator && window.navigator.share) {
@@ -339,60 +412,95 @@ const CalculatorApp = () => {
         setCopySuccess('Copied!');
         setTimeout(() => setCopySuccess(''), 2000);
       } catch (err) {
-        setCopySuccess('Failed to copy');
+        setCopySuccess('Failed');
       }
     }
   };
 
-  // Check if share API is available
   const [canShare, setCanShare] = useState(false);
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined' && window.navigator && window.navigator.share) {
       setCanShare(true);
     }
   }, []);
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-black overflow-hidden">
+    <div className={`fixed inset-0 flex flex-col transition-colors duration-500 ease-in-out overflow-hidden ${theme.bgClass}`}>
+
+      {/* Header */}
+      <div className={`pt-4 pb-0 text-center ${theme.textPrimary}`}>
+        <h1 className="text-sm font-bold opacity-70 tracking-widest uppercase">Survivor {activeSurvivorIndex + 1}</h1>
+      </div>
+
       <RollSummary
         hitRoll={hitRequiredRoll}
         woundRoll={woundRequiredRoll}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
+        theme={theme}
       />
-      <div className="flex-1 p-2 sm:p-4 min-h-0 pb-16">
-        {currentPage === 'hit' ? (
-          <HitCalculator
-            survivorAccuracy={survivorAccuracy}
-            setSurvivorAccuracy={setSurvivorAccuracy}
-            weaponAccuracy={weaponAccuracy}
-            setWeaponAccuracy={setWeaponAccuracy}
-            monsterEvasion={monsterEvasion}
-            setMonsterEvasion={setMonsterEvasion}
-            inBlindSpot={inBlindSpot}
-            setInBlindSpot={setInBlindSpot}
-            monsterKnockedDown={monsterKnockedDown}
-            setMonsterKnockedDown={setMonsterKnockedDown}
-            requiredRoll={hitRequiredRoll}
-          />
-        ) : (
-          <WoundCalculator
-            weaponStrength={weaponStrength}
-            setWeaponStrength={setWeaponStrength}
-            survivorStrength={survivorStrength}
-            setSurvivorStrength={setSurvivorStrength}
-            monsterToughness={monsterToughness}
-            setMonsterToughness={setMonsterToughness}
-            luck={luck}
-            setLuck={setLuck}
-            monsterLuck={monsterLuck}
-            setMonsterLuck={setMonsterLuck}
-            requiredRoll={woundRequiredRoll}
-          />
-        )}
+
+      <div className="flex-1 min-h-0 relative overflow-hidden">
+        <AnimatePresence mode='wait' initial={false}>
+          <motion.div
+            key={activeSurvivorIndex}
+            className="absolute inset-0 p-2 sm:p-4 pb-20"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={handleDragEnd}
+          >
+            {currentPage === 'hit' ? (
+              <HitCalculator
+                survivorAccuracy={currentSurvivor.accuracy}
+                setSurvivorAccuracy={(v) => updateSurvivor('accuracy', v)}
+                weaponAccuracy={currentSurvivor.weaponAccuracy}
+                setWeaponAccuracy={(v) => updateSurvivor('weaponAccuracy', v)}
+                monsterEvasion={monster.evasion}
+                setMonsterEvasion={(v) => updateMonster('evasion', v)}
+                inBlindSpot={currentSurvivor.blindSpot}
+                setInBlindSpot={(v) => updateSurvivor('blindSpot', v)}
+                monsterKnockedDown={monster.knockedDown}
+                setMonsterKnockedDown={(v) => updateMonster('knockedDown', v)}
+                requiredRoll={hitRequiredRoll}
+                theme={theme}
+              />
+            ) : (
+              <WoundCalculator
+                weaponStrength={currentSurvivor.weaponStrength}
+                setWeaponStrength={(v) => updateSurvivor('weaponStrength', v)}
+                survivorStrength={currentSurvivor.strength}
+                setSurvivorStrength={(v) => updateSurvivor('strength', v)}
+                monsterToughness={monster.toughness}
+                setMonsterToughness={(v) => updateMonster('toughness', v)}
+                luck={currentSurvivor.luck}
+                setLuck={(v) => updateSurvivor('luck', v)}
+                monsterLuck={monster.luck}
+                setMonsterLuck={(v) => updateMonster('luck', v)}
+                requiredRoll={woundRequiredRoll}
+                theme={theme}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
+      {/* Dots Indicator */}
+      <div className="fixed bottom-20 left-0 right-0 flex justify-center space-x-2 pointer-events-none">
+        {THEMES.map((t, idx) => (
+          <div
+            key={idx}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === activeSurvivorIndex ? `${t.dotActive} scale-125` : t.dotInactive
+              }`}
+          />
+        ))}
+      </div>
+
+      {/* Bottom Menu Button */}
       {/* Backdrop */}
       {isOpen && (
         <div
@@ -401,57 +509,57 @@ const CalculatorApp = () => {
         />
       )}
 
-      {/* Share Button */}
+      {/* Share Button (Toggle) */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 right-4 w-12 h-12 rounded-full bg-gray-700 hover:bg-gray-600 active:bg-gray-500 transition-colors flex items-center justify-center shadow-lg z-30"
+        className={`fixed bottom-4 right-4 w-12 h-12 rounded-full shadow-lg z-30 flex items-center justify-center transition-colors ${theme.buttonBg} backdrop-blur-md`}
         aria-label="Show share options"
       >
-        <Share2 className="w-6 h-6 text-gray-100" />
+        <Share2 className={`w-6 h-6 ${theme.textPrimary}`} />
       </button>
 
       {/* Share Panel */}
       <div
-        className={`fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 transition-transform duration-300 ease-in-out z-30 ${isOpen ? 'translate-y-0' : 'translate-y-full'
+        className={`fixed bottom-0 left-0 right-0 ${theme.cardBg} backdrop-blur-xl border-t border-white/10 transition-transform duration-300 ease-in-out z-30 ${isOpen ? 'translate-y-0' : 'translate-y-full'
           }`}
       >
-        <div className="p-4 flex flex-col items-center space-y-3">
+        <div className="p-6 flex flex-col items-center space-y-4">
           {canShare && (
             <button
               onClick={handleShare}
-              className="flex items-center space-x-2 px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 transition-colors w-48"
+              className={`flex items-center space-x-3 px-6 py-3 rounded-xl transition-colors w-64 justify-center ${theme.buttonBg}`}
             >
-              <Share2 className="w-4 h-4" />
-              <span>Share</span>
+              <Share2 className={`w-5 h-5 ${theme.textPrimary}`} />
+              <span className={`font-medium ${theme.textPrimary}`}>Share</span>
             </button>
           )}
 
           <button
             onClick={handleCopyLink}
-            className="flex items-center space-x-2 px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 transition-colors w-48"
+            className={`flex items-center space-x-3 px-6 py-3 rounded-xl transition-colors w-64 justify-center ${theme.buttonBg}`}
           >
-            <Copy className="w-4 h-4" />
-            <span>{copySuccess || 'Copy Link'}</span>
+            <Copy className={`w-5 h-5 ${theme.textPrimary}`} />
+            <span className={`font-medium ${theme.textPrimary}`}>{copySuccess || 'Copy Link'}</span>
           </button>
 
           {wakeLockSupported && (
             <button
               onClick={toggleWakeLock}
-              className={`flex items-center space-x-2 px-4 py-2 rounded transition-colors w-48 ${isWakeLockActive
-                  ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                  : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+              className={`flex items-center space-x-3 px-6 py-3 rounded-xl transition-all w-64 justify-center ${isWakeLockActive
+                ? `${theme.activeRing} ring-2 bg-white/10`
+                : theme.buttonBg
                 }`}
             >
               {isWakeLockActive ? (
-                <Zap className="w-4 h-4" fill="currentColor" />
+                <Zap className={`w-5 h-5 ${theme.textPrimary}`} fill="currentColor" />
               ) : (
-                <ZapOff className="w-4 h-4" />
+                <ZapOff className={`w-5 h-5 ${theme.textPrimary}`} />
               )}
-              <span>{isWakeLockActive ? 'Screen Awake' : 'Keep Awake'}</span>
+              <span className={`font-medium ${theme.textPrimary}`}>{isWakeLockActive ? 'Screen Awake' : 'Keep Awake'}</span>
             </button>
           )}
 
-          <div className="text-sm text-gray-400 pt-2">
+          <div className={`text-sm ${theme.textSecondary} pt-2 opacity-50`}>
             {version}
           </div>
         </div>
