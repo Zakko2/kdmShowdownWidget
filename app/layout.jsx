@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#000000" />
       </head>
-      <body className="min-h-screen bg-background">
+      <body className="min-h-screen bg-background" suppressHydrationWarning>
         <main className="container mx-auto p-4">
           {children}
         </main>
