@@ -12,7 +12,7 @@ const THEMES = [
     // Background: Very pale version
     bgMain: 'bg-[#F2F8F3]',
     // Card: The Base Color (#BDD3C1)
-    cardBg: 'bg-[#BDD3C1]',
+    cardBg: 'bg-[#BDD3C1]/90',
     // Text on Card (Mint is light, so Dark text)
     textPrimary: 'text-emerald-950',
     textSecondary: 'text-emerald-800',
@@ -28,7 +28,7 @@ const THEMES = [
     // Background: Very pale version
     bgMain: 'bg-[#F0F6FF]',
     // Card: The Base Color (#6A95D4)
-    cardBg: 'bg-[#6A95D4]',
+    cardBg: 'bg-[#6A95D4]/90',
     // Text on Card (This blue is mid-tone, White text looks premium/cleaner, or very dark blue)
     // Let's try White for primary text to pop against the blue.
     textPrimary: 'text-white',
@@ -45,7 +45,7 @@ const THEMES = [
     // Background: Very pale beige/tan
     bgMain: 'bg-[#F5F2EA]',
     // Card: The Base Color (#6D5831)
-    cardBg: 'bg-[#6D5831]',
+    cardBg: 'bg-[#6D5831]/90',
     // Text on Card (Dark brown background -> White text)
     textPrimary: 'text-amber-50',
     textSecondary: 'text-amber-200',
@@ -61,7 +61,7 @@ const THEMES = [
     // Background: Very pale peach
     bgMain: 'bg-[#FFF5F2]',
     // Card: The Base Color (#C97B63)
-    cardBg: 'bg-[#C97B63]',
+    cardBg: 'bg-[#C97B63]/90',
     // Text on Card (Terracotta is warm mid-tone, White often looks best)
     textPrimary: 'text-white',
     textSecondary: 'text-orange-50',
@@ -419,12 +419,12 @@ const CalculatorApp = () => {
   }, []);
 
   return (
-    <div className={`fixed inset-0 flex flex-col transition-colors duration-500 ease-in-out overflow-hidden ${theme.bgMain}`}>
+    <div className={`fixed inset-0 flex flex-col transition-colors duration-500 ease-in-out overflow-hidden`}>
 
       {/* Header */}
       <div className={`pt-2 pb-0 text-center`}>
         {/* Using active dot color for text to tie it together, or just dark gray */}
-        <h1 className={`text-xs font-black uppercase tracking-[0.2em] opacity-40 text-black`}>Survivor {activeSurvivorIndex + 1}</h1>
+        <h1 className={`text-xs font-black uppercase tracking-[0.2em] opacity-80 text-white`}>Survivor {activeSurvivorIndex + 1}</h1>
       </div>
 
       <RollSummary
@@ -499,11 +499,11 @@ const CalculatorApp = () => {
       {/* Share Button (transparent/unobtrusive) */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-0 right-0 p-4 opacity-50 hover:opacity-100 transition-opacity z-20`}
+        className={`fixed bottom-0 right-0 p-4 opacity-90 hover:opacity-100 transition-opacity z-20`}
         aria-label="Show menu"
       >
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-black/5`}>
-          <Share2 className={`w-5 h-5 text-gray-400`} />
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-black/60 shadow-lg backdrop-blur-sm`}>
+          <Share2 className={`w-5 h-5 text-white`} />
         </div>
       </button>
 
