@@ -42,12 +42,18 @@ A web application designed to help Kingdom Death: Monster players calculate hit 
   - Interactive Trait Manager modal accessible directly in 4-Player TV view via `+Traits`.
 
 ### 4-Player TV View (Widescreen / SmartView)
-- **4-Column Layout** optimized for TV casting via SmartView to widescreen televisions, with quick toggle to 2x2 Grid
+- **4-Column Dashboard** optimized specifically for TV casting via SmartView to widescreen televisions
 - Real-time **Hit**, **Wound**, and **Crit** roll badges for every player visible at a glance
 - Shared top Monster control bar (Toughness, Evasion, Luck, Knocked Down toggle) that updates all 4 players concurrently
 - Compact stat controls per player following the **Survivor &rarr; Weapon &rarr; Monster** convention
 - Quick switch button (`4P TV` / `Single View`) in header and slide-up menu
 - Direct single-click navigation to jump into any individual survivor's detailed card
+
+### Mobile Portrait Optimization
+- Responsive 3-column stat rows fitting Survivor, Weapon, and Monster stats side-by-side with zero cutoffs
+- Side-by-side compact checkboxes for Blind Spot and Knocked Down
+- Critical wound calculations and weapon rule reminder notes fully visible above navigation dots
+- Smooth overflow scroll safety for smaller smartphone screens
 
 ### Session Persistence & Reset Controls
 - **Automatic Auto-Save via Cookies & LocalStorage**:

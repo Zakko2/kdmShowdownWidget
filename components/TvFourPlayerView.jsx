@@ -13,9 +13,7 @@ import {
   Eye,
   Clover,
   Check,
-  Menu,
-  Columns,
-  LayoutGrid
+  Menu
 } from 'lucide-react';
 import { WEAPON_TRAITS, TRAIT_CATEGORIES, getWeaponLuckBonus } from '@/lib/weaponTraits';
 
@@ -61,10 +59,10 @@ const MonsterStatInput = ({ label, value, onChange, icon: Icon }) => {
   const decrement = () => onChange(Math.max(value - 1, -99));
 
   return (
-    <div className="flex items-center space-x-1.5 bg-neutral-950/70 border border-neutral-800 rounded-lg px-2 py-0.5">
+    <div className="flex items-center space-x-1 bg-neutral-950/70 border border-neutral-800 rounded-lg px-1.5 sm:px-2 py-0.5">
       <div className="flex items-center space-x-1">
         {Icon && <Icon className="w-3 h-3 text-red-400" />}
-        <span className="text-[11px] font-semibold text-neutral-300 uppercase tracking-wider">{label}</span>
+        <span className="text-[10px] sm:text-[11px] font-semibold text-neutral-300 uppercase tracking-wider">{label}</span>
       </div>
       <div className="flex items-center space-x-0.5">
         <button
@@ -75,7 +73,7 @@ const MonsterStatInput = ({ label, value, onChange, icon: Icon }) => {
         >
           <Minus className="w-2.5 h-2.5" />
         </button>
-        <span className="w-5 text-center text-xs font-bold text-white">{value}</span>
+        <span className="w-4 sm:w-5 text-center text-xs font-bold text-white">{value}</span>
         <button
           type="button"
           onClick={increment}
@@ -102,7 +100,6 @@ const TvFourPlayerView = ({
   onSelectSurvivor,
   onOpenMenu
 }) => {
-  const [layoutMode, setLayoutMode] = useState('columns'); // 'columns' | 'grid'
   const [traitModalSurvivorIdx, setTraitModalSurvivorIdx] = useState(null);
   const [modalCategory, setModalCategory] = useState('All');
 
@@ -141,48 +138,18 @@ const TvFourPlayerView = ({
 
   return (
     <div className="fixed inset-0 flex flex-col p-1.5 md:p-2 overflow-hidden bg-black/60 backdrop-blur-md">
-      {/* Top Bar: Ultra-compact, strictly single-line, zero wrapping */}
-      <header className="flex items-center justify-between gap-2 mb-1.5 px-2.5 py-1 bg-neutral-900/90 border border-neutral-800 rounded-xl shadow-xl flex-nowrap shrink-0">
-        {/* Left: Branding & Compact Layout Icon Toggles */}
-        <div className="flex items-center space-x-2 shrink-0">
-          <div className="flex items-center space-x-1.5">
-            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-xs font-black tracking-widest text-neutral-100 uppercase hidden sm:inline">
-              KDM Showdown
-            </span>
-          </div>
-
-          {/* Layout Icon Switcher */}
-          <div className="flex items-center p-0.5 bg-neutral-950/80 border border-neutral-800 rounded-lg">
-            <button
-              type="button"
-              onClick={() => setLayoutMode('columns')}
-              className={`p-1 rounded transition-all ${
-                layoutMode === 'columns'
-                  ? 'bg-neutral-700 text-blue-400 shadow-sm'
-                  : 'text-neutral-400 hover:text-neutral-200'
-              }`}
-              title="4 Columns View"
-            >
-              <Columns className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setLayoutMode('grid')}
-              className={`p-1 rounded transition-all ${
-                layoutMode === 'grid'
-                  ? 'bg-neutral-700 text-amber-400 shadow-sm'
-                  : 'text-neutral-400 hover:text-neutral-200'
-              }`}
-              title="2x2 Grid View"
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-            </button>
-          </div>
+      {/* Top Bar: Strictly single-line, zero wrapping */}
+      <header className="flex items-center justify-between gap-1.5 mb-1.5 px-2.5 py-1 bg-neutral-900/90 border border-neutral-800 rounded-xl shadow-xl flex-nowrap shrink-0">
+        {/* Left: Branding */}
+        <div className="flex items-center space-x-1.5 shrink-0">
+          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+          <span className="text-xs font-black tracking-widest text-neutral-100 uppercase hidden xs:inline">
+            KDM Showdown
+          </span>
         </div>
 
         {/* Center: Monster Controls */}
-        <div className="flex items-center gap-1.5 flex-nowrap shrink-0 overflow-x-auto">
+        <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap shrink-0 overflow-x-auto scrollbar-none">
           <MonsterStatInput
             label="Tough"
             value={monster.toughness}
@@ -206,7 +173,7 @@ const TvFourPlayerView = ({
           <button
             type="button"
             onClick={() => updateMonster('knockedDown', !monster.knockedDown)}
-            className={`flex items-center space-x-1 px-2 py-0.5 rounded-lg border text-[11px] font-semibold transition-all whitespace-nowrap ${
+            className={`flex items-center space-x-1 px-1.5 sm:px-2 py-0.5 rounded-lg border text-[10px] sm:text-[11px] font-semibold transition-all whitespace-nowrap ${
               monster.knockedDown
                 ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-sm'
                 : 'bg-neutral-950/70 border-neutral-800 text-neutral-400 hover:text-neutral-200'
@@ -217,7 +184,8 @@ const TvFourPlayerView = ({
             }`}>
               {monster.knockedDown && <Check className="w-2 h-2 stroke-[3]" />}
             </div>
-            <span>Knocked Down (3+)</span>
+            <span className="hidden sm:inline">Knocked Down (3+)</span>
+            <span className="sm:hidden">KD (3+)</span>
           </button>
         </div>
 
@@ -247,14 +215,8 @@ const TvFourPlayerView = ({
         </div>
       </header>
 
-      {/* Main Container: 4 Columns vs 2x2 Grid */}
-      <main
-        className={
-          layoutMode === 'columns'
-            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 md:gap-2 flex-1 min-h-0'
-            : 'grid grid-cols-1 md:grid-cols-2 gap-1.5 md:gap-2 flex-1 min-h-0'
-        }
-      >
+      {/* Main Container: Pure 4-Column Layout */}
+      <main className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 md:gap-2 flex-1 min-h-0 overflow-y-auto lg:overflow-visible">
         {survivors.map((survivor, idx) => {
           const theme = themes[idx];
           const activeWeaponIdx = survivor.activeWeaponIndex || 0;
@@ -263,210 +225,13 @@ const TvFourPlayerView = ({
           const woundRoll = calculateWoundRollFor(survivor);
           const critText = calculateCritTextFor(survivor);
 
-          if (layoutMode === 'columns') {
-            // --- 4 COLUMNS LAYOUT ---
-            return (
-              <Card
-                key={idx}
-                className={`border-none shadow-xl ${theme.cardBg} flex flex-col rounded-xl overflow-hidden h-full`}
-              >
-                <CardContent className="p-2 md:p-2.5 flex-1 flex flex-col justify-between space-y-1.5">
-                  {/* Single-line Header: Survivor Title & W1/W2 Selector */}
-                  <div className="flex items-center justify-between border-b border-black/10 pb-1">
-                    <div className="flex items-center space-x-1.5">
-                      <button
-                        type="button"
-                        onClick={() => onSelectSurvivor(idx)}
-                        className="flex items-center space-x-1.5 text-left group"
-                        title={`Open Survivor ${idx + 1} in Single View`}
-                      >
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-black ${theme.dotActive} text-white shadow-sm group-hover:scale-105 transition-transform`}>
-                          {idx + 1}
-                        </div>
-                        <h2 className={`text-xs md:text-sm font-black uppercase tracking-wider ${theme.textPrimary}`}>
-                          S{idx + 1}
-                        </h2>
-                      </button>
-
-                      {/* W1 / W2 Pill Selector */}
-                      <div className="flex items-center p-0.5 bg-black/20 rounded-md">
-                        <button
-                          type="button"
-                          onClick={() => switchSurvivorWeapon(idx, 0)}
-                          className={`px-1.5 py-0.2 rounded text-[10px] font-black transition-all ${
-                            activeWeaponIdx === 0
-                              ? 'bg-white/35 text-white shadow-sm'
-                              : 'opacity-50 hover:opacity-100'
-                          }`}
-                          title="Switch to Weapon 1"
-                        >
-                          W1
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => switchSurvivorWeapon(idx, 1)}
-                          className={`px-1.5 py-0.2 rounded text-[10px] font-black transition-all ${
-                            activeWeaponIdx === 1
-                              ? 'bg-white/35 text-white shadow-sm'
-                              : 'opacity-50 hover:opacity-100'
-                          }`}
-                          title="Switch to Weapon 2"
-                        >
-                          W2
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Trait manager & Single view button */}
-                    <div className="flex items-center space-x-1">
-                      <button
-                        type="button"
-                        onClick={() => setTraitModalSurvivorIdx(idx)}
-                        className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${theme.buttonBg} transition-all`}
-                        title="Manage Weapon Traits"
-                      >
-                        +Traits
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onSelectSurvivor(idx)}
-                        className={`p-1 rounded opacity-70 hover:opacity-100 ${theme.buttonBg} transition-all`}
-                        title={`Open Survivor ${idx + 1} in Single View`}
-                      >
-                        <Smartphone className={`w-3 h-3 ${theme.buttonIcon}`} />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Dual Roll Tiles (Prominent side-by-side) */}
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {/* To Hit Tile */}
-                    <div className="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg bg-black/20 backdrop-blur-xs">
-                      <div className="flex items-center space-x-1">
-                        <Target className={`w-3 h-3 ${theme.textSecondary}`} />
-                        <span className={`text-[9px] uppercase font-bold tracking-wider ${theme.textSecondary}`}>Hit</span>
-                      </div>
-                      <p className={`text-2xl lg:text-3xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
-                        {hitRoll}+
-                      </p>
-                    </div>
-
-                    {/* To Wound Tile */}
-                    <div className="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg bg-black/20 backdrop-blur-xs">
-                      <div className="flex items-center space-x-1">
-                        <Sword className={`w-3 h-3 ${theme.textSecondary}`} />
-                        <span className={`text-[9px] uppercase font-bold tracking-wider ${theme.textSecondary}`}>Wound</span>
-                      </div>
-                      <p className={`text-2xl lg:text-3xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
-                        {woundRoll}+
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Crit Status Pill & Traits */}
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-center space-x-1 py-0.5 px-2 rounded bg-black/15 text-center">
-                      <Sparkles className={`w-2.5 h-2.5 ${theme.textSecondary}`} />
-                      <span className={`text-[10px] md:text-[11px] font-extrabold ${theme.textPrimary}`}>
-                        {critText}
-                      </span>
-                    </div>
-
-                    {/* Active Weapon Traits Chips */}
-                    {activeWeapon.traits && activeWeapon.traits.length > 0 && (
-                      <div className="flex flex-wrap items-center justify-center gap-1">
-                        {activeWeapon.traits.map(tId => {
-                          const trait = WEAPON_TRAITS.find(t => t.id === tId);
-                          if (!trait) return null;
-                          return (
-                            <span
-                              key={trait.id}
-                              onClick={() => setTraitModalSurvivorIdx(idx)}
-                              className="px-1.5 py-0.2 rounded bg-black/25 text-[8.5px] font-black uppercase tracking-wider cursor-pointer hover:bg-black/40 transition-colors"
-                              title={trait.description}
-                            >
-                              {trait.name}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Stat Modifiers - 3 compact rows: Acc -> Str -> BlindSpot/Luck */}
-                  <div className="space-y-1 flex-1 flex flex-col justify-end pt-1 border-t border-black/10">
-                    {/* Row 1: Accuracy */}
-                    <div className="grid grid-cols-2 gap-1">
-                      <CompactStatInput
-                        label="Survivor Acc"
-                        value={survivor.accuracy}
-                        onChange={(v) => updateSurvivorIndex(idx, 'accuracy', v)}
-                        theme={theme}
-                      />
-                      <CompactStatInput
-                        label="Weapon Acc"
-                        value={activeWeapon.accuracy}
-                        onChange={(v) => updateSurvivorWeaponStat(idx, activeWeaponIdx, 'accuracy', v)}
-                        theme={theme}
-                      />
-                    </div>
-
-                    {/* Row 2: Strength */}
-                    <div className="grid grid-cols-2 gap-1">
-                      <CompactStatInput
-                        label="Survivor Str"
-                        value={survivor.strength}
-                        onChange={(v) => updateSurvivorIndex(idx, 'strength', v)}
-                        theme={theme}
-                      />
-                      <CompactStatInput
-                        label="Weapon Str"
-                        value={activeWeapon.strength}
-                        onChange={(v) => updateSurvivorWeaponStat(idx, activeWeaponIdx, 'strength', v)}
-                        theme={theme}
-                      />
-                    </div>
-
-                    {/* Row 3: Blind Spot & Survivor Luck side by side */}
-                    <div className="grid grid-cols-2 gap-1 items-center">
-                      <div
-                        onClick={() => updateSurvivorIndex(idx, 'blindSpot', !survivor.blindSpot)}
-                        className={`h-full flex items-center justify-center space-x-1.5 p-1 rounded-lg cursor-pointer transition-all ${
-                          survivor.blindSpot ? 'bg-black/25 ring-1 ring-current' : 'bg-black/10 hover:bg-black/15'
-                        }`}
-                      >
-                        <div className={`w-3 h-3 rounded border flex items-center justify-center ${
-                          survivor.blindSpot ? 'bg-white/40 border-transparent text-white' : 'border-current opacity-60'
-                        }`}>
-                          {survivor.blindSpot && <Check className="w-2 h-2 stroke-[3]" />}
-                        </div>
-                        <span className={`text-[9px] md:text-[10px] font-bold ${theme.textPrimary} select-none`}>
-                          Blind Spot
-                        </span>
-                      </div>
-
-                      <CompactStatInput
-                        label="Survivor Luck"
-                        value={survivor.luck}
-                        onChange={(v) => updateSurvivorIndex(idx, 'luck', v)}
-                        theme={theme}
-                        icon={Clover}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          }
-
-          // --- 2x2 GRID LAYOUT ---
           return (
             <Card
               key={idx}
-              className={`border-none shadow-xl ${theme.cardBg} flex flex-col rounded-xl overflow-hidden`}
+              className={`border-none shadow-xl ${theme.cardBg} flex flex-col rounded-xl overflow-hidden h-full min-h-[250px] lg:min-h-0`}
             >
               <CardContent className="p-2 md:p-2.5 flex-1 flex flex-col justify-between space-y-1.5">
-                {/* Header: Survivor Info & W1/W2 Toggle */}
+                {/* Single-line Header: Survivor Title & W1/W2 Selector */}
                 <div className="flex items-center justify-between border-b border-black/10 pb-1">
                   <div className="flex items-center space-x-1.5">
                     <button
@@ -479,7 +244,7 @@ const TvFourPlayerView = ({
                         {idx + 1}
                       </div>
                       <h2 className={`text-xs md:text-sm font-black uppercase tracking-wider ${theme.textPrimary}`}>
-                        Survivor {idx + 1}
+                        S{idx + 1}
                       </h2>
                     </button>
 
@@ -493,7 +258,7 @@ const TvFourPlayerView = ({
                             ? 'bg-white/35 text-white shadow-sm'
                             : 'opacity-50 hover:opacity-100'
                         }`}
-                        title="Weapon 1"
+                        title="Switch to Weapon 1"
                       >
                         W1
                       </button>
@@ -505,88 +270,149 @@ const TvFourPlayerView = ({
                             ? 'bg-white/35 text-white shadow-sm'
                             : 'opacity-50 hover:opacity-100'
                         }`}
-                        title="Weapon 2"
+                        title="Switch to Weapon 2"
                       >
                         W2
                       </button>
                     </div>
                   </div>
 
-                  {/* Roll Badges */}
-                  <div className="flex items-center space-x-1.5">
-                    <div className="flex items-center space-x-1 px-1.5 py-0.5 rounded bg-black/20 backdrop-blur-xs">
-                      <Target className={`w-3 h-3 ${theme.textSecondary}`} />
-                      <span className={`text-xs font-black ${theme.textPrimary}`}>
-                        {hitRoll}+
-                      </span>
-                    </div>
-
-                    <div className="flex items-center space-x-1 px-1.5 py-0.5 rounded bg-black/20 backdrop-blur-xs">
-                      <Sword className={`w-3 h-3 ${theme.textSecondary}`} />
-                      <span className={`text-xs font-black ${theme.textPrimary}`}>
-                        {woundRoll}+
-                      </span>
-                    </div>
-
-                    <div className="flex items-center space-x-1 px-1.5 py-0.5 rounded bg-black/15">
-                      <Sparkles className={`w-2.5 h-2.5 ${theme.textSecondary}`} />
-                      <span className={`text-[10px] font-bold ${theme.textPrimary}`}>
-                        {critText}
-                      </span>
-                    </div>
+                  {/* Trait manager & Single view button */}
+                  <div className="flex items-center space-x-1">
+                    <button
+                      type="button"
+                      onClick={() => setTraitModalSurvivorIdx(idx)}
+                      className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${theme.buttonBg} transition-all`}
+                      title="Manage Weapon Traits"
+                    >
+                      +Traits
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onSelectSurvivor(idx)}
+                      className={`p-1 rounded opacity-70 hover:opacity-100 ${theme.buttonBg} transition-all`}
+                      title={`Open Survivor ${idx + 1} in Single View`}
+                    >
+                      <Smartphone className={`w-3 h-3 ${theme.buttonIcon}`} />
+                    </button>
                   </div>
                 </div>
 
-                {/* Stat Modifiers */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1">
-                  <CompactStatInput
-                    label="Survivor Acc"
-                    value={survivor.accuracy}
-                    onChange={(v) => updateSurvivorIndex(idx, 'accuracy', v)}
-                    theme={theme}
-                  />
-                  <CompactStatInput
-                    label="Weapon Acc"
-                    value={activeWeapon.accuracy}
-                    onChange={(v) => updateSurvivorWeaponStat(idx, activeWeaponIdx, 'accuracy', v)}
-                    theme={theme}
-                  />
-
-                  <div
-                    onClick={() => updateSurvivorIndex(idx, 'blindSpot', !survivor.blindSpot)}
-                    className={`flex items-center justify-center space-x-1.5 p-1 rounded-lg cursor-pointer transition-all col-span-2 sm:col-span-1 ${
-                      survivor.blindSpot ? 'bg-black/25 ring-1 ring-current' : 'bg-black/10 hover:bg-black/15'
-                    }`}
-                  >
-                    <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${
-                      survivor.blindSpot ? 'bg-white/40 border-transparent text-white' : 'border-current opacity-60'
-                    }`}>
-                      {survivor.blindSpot && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                {/* Dual Roll Tiles (Prominent side-by-side) */}
+                <div className="grid grid-cols-2 gap-1.5">
+                  {/* To Hit Tile */}
+                  <div className="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg bg-black/20 backdrop-blur-xs">
+                    <div className="flex items-center space-x-1">
+                      <Target className={`w-3 h-3 ${theme.textSecondary}`} />
+                      <span className={`text-[9px] uppercase font-bold tracking-wider ${theme.textSecondary}`}>Hit</span>
                     </div>
-                    <span className={`text-[10px] font-semibold ${theme.textPrimary} select-none`}>
-                      Blind Spot (+1)
+                    <p className={`text-2xl lg:text-3xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
+                      {hitRoll}+
+                    </p>
+                  </div>
+
+                  {/* To Wound Tile */}
+                  <div className="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg bg-black/20 backdrop-blur-xs">
+                    <div className="flex items-center space-x-1">
+                      <Sword className={`w-3 h-3 ${theme.textSecondary}`} />
+                      <span className={`text-[9px] uppercase font-bold tracking-wider ${theme.textSecondary}`}>Wound</span>
+                    </div>
+                    <p className={`text-2xl lg:text-3xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
+                      {woundRoll}+
+                    </p>
+                  </div>
+                </div>
+
+                {/* Crit Status Pill & Traits */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-center space-x-1 py-0.5 px-2 rounded bg-black/15 text-center">
+                    <Sparkles className={`w-2.5 h-2.5 ${theme.textSecondary}`} />
+                    <span className={`text-[10px] md:text-[11px] font-extrabold ${theme.textPrimary}`}>
+                      {critText}
                     </span>
                   </div>
 
-                  <CompactStatInput
-                    label="Survivor Str"
-                    value={survivor.strength}
-                    onChange={(v) => updateSurvivorIndex(idx, 'strength', v)}
-                    theme={theme}
-                  />
-                  <CompactStatInput
-                    label="Weapon Str"
-                    value={activeWeapon.strength}
-                    onChange={(v) => updateSurvivorWeaponStat(idx, activeWeaponIdx, 'strength', v)}
-                    theme={theme}
-                  />
-                  <CompactStatInput
-                    label="Survivor Luck"
-                    value={survivor.luck}
-                    onChange={(v) => updateSurvivorIndex(idx, 'luck', v)}
-                    theme={theme}
-                    icon={Clover}
-                  />
+                  {/* Active Weapon Traits Chips */}
+                  {activeWeapon.traits && activeWeapon.traits.length > 0 && (
+                    <div className="flex flex-wrap items-center justify-center gap-1">
+                      {activeWeapon.traits.map(tId => {
+                        const trait = WEAPON_TRAITS.find(t => t.id === tId);
+                        if (!trait) return null;
+                        return (
+                          <span
+                            key={trait.id}
+                            onClick={() => setTraitModalSurvivorIdx(idx)}
+                            className="px-1.5 py-0.2 rounded bg-black/25 text-[8.5px] font-black uppercase tracking-wider cursor-pointer hover:bg-black/40 transition-colors"
+                            title={trait.description}
+                          >
+                            {trait.name}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Stat Modifiers - 3 compact rows: Acc -> Str -> BlindSpot/Luck */}
+                <div className="space-y-1 flex-1 flex flex-col justify-end pt-1 border-t border-black/10">
+                  {/* Row 1: Accuracy */}
+                  <div className="grid grid-cols-2 gap-1">
+                    <CompactStatInput
+                      label="Survivor Acc"
+                      value={survivor.accuracy}
+                      onChange={(v) => updateSurvivorIndex(idx, 'accuracy', v)}
+                      theme={theme}
+                    />
+                    <CompactStatInput
+                      label="Weapon Acc"
+                      value={activeWeapon.accuracy}
+                      onChange={(v) => updateSurvivorWeaponStat(idx, activeWeaponIdx, 'accuracy', v)}
+                      theme={theme}
+                    />
+                  </div>
+
+                  {/* Row 2: Strength */}
+                  <div className="grid grid-cols-2 gap-1">
+                    <CompactStatInput
+                      label="Survivor Str"
+                      value={survivor.strength}
+                      onChange={(v) => updateSurvivorIndex(idx, 'strength', v)}
+                      theme={theme}
+                    />
+                    <CompactStatInput
+                      label="Weapon Str"
+                      value={activeWeapon.strength}
+                      onChange={(v) => updateSurvivorWeaponStat(idx, activeWeaponIdx, 'strength', v)}
+                      theme={theme}
+                    />
+                  </div>
+
+                  {/* Row 3: Blind Spot & Survivor Luck side by side */}
+                  <div className="grid grid-cols-2 gap-1 items-center">
+                    <div
+                      onClick={() => updateSurvivorIndex(idx, 'blindSpot', !survivor.blindSpot)}
+                      className={`h-full flex items-center justify-center space-x-1.5 p-1 rounded-lg cursor-pointer transition-all ${
+                        survivor.blindSpot ? 'bg-black/25 ring-1 ring-current' : 'bg-black/10 hover:bg-black/15'
+                      }`}
+                    >
+                      <div className={`w-3 h-3 rounded border flex items-center justify-center ${
+                        survivor.blindSpot ? 'bg-white/40 border-transparent text-white' : 'border-current opacity-60'
+                      }`}>
+                        {survivor.blindSpot && <Check className="w-2 h-2 stroke-[3]" />}
+                      </div>
+                      <span className={`text-[9px] md:text-[10px] font-bold ${theme.textPrimary} select-none`}>
+                        Blind Spot
+                      </span>
+                    </div>
+
+                    <CompactStatInput
+                      label="Survivor Luck"
+                      value={survivor.luck}
+                      onChange={(v) => updateSurvivorIndex(idx, 'luck', v)}
+                      theme={theme}
+                      icon={Clover}
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>

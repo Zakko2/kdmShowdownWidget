@@ -90,21 +90,29 @@ const StatInput = ({ label, value, onChange, theme }) => {
   const decrement = () => onChange(Math.max(value - 1, -99));
 
   return (
-    <div className="flex flex-col items-center space-y-1">
-      <label className={`text-xs uppercase tracking-wider font-semibold ${theme.textSecondary}`}>{label}</label>
-      <div className="flex items-center justify-center w-full space-x-3">
+    <div className="flex flex-col items-center justify-center p-1 sm:p-2 rounded-xl bg-black/10 backdrop-blur-xs">
+      <label className={`text-[9px] sm:text-xs uppercase tracking-wider font-bold ${theme.textSecondary} truncate mb-0.5 text-center`}>
+        {label}
+      </label>
+      <div className="flex items-center justify-center w-full space-x-1 sm:space-x-2.5">
         <button
+          type="button"
           onClick={decrement}
-          className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors ${theme.buttonBg}`}
+          className={`w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-colors ${theme.buttonBg} active:scale-95`}
+          aria-label={`Decrease ${label}`}
         >
-          <Minus className={`w-5 h-5 ${theme.buttonIcon}`} />
+          <Minus className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${theme.buttonIcon}`} />
         </button>
-        <div className={`w-8 text-center text-xl font-bold ${theme.textPrimary}`}>{value}</div>
+        <div className={`w-6 sm:w-8 text-center text-base sm:text-xl font-black ${theme.textPrimary}`}>
+          {value}
+        </div>
         <button
+          type="button"
           onClick={increment}
-          className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors ${theme.buttonBg}`}
+          className={`w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-colors ${theme.buttonBg} active:scale-95`}
+          aria-label={`Increase ${label}`}
         >
-          <Plus className={`w-5 h-5 ${theme.buttonIcon}`} />
+          <Plus className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${theme.buttonIcon}`} />
         </button>
       </div>
     </div>
@@ -114,43 +122,49 @@ const StatInput = ({ label, value, onChange, theme }) => {
 const Checkbox = ({ id, label, checked, onChange, theme }) => (
   <div
     onClick={() => onChange(!checked)}
-    className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-colors ${theme.buttonBg}`}
+    className={`flex items-center space-x-2 p-2 rounded-xl cursor-pointer transition-colors ${
+      checked ? 'bg-black/20 ring-1 ring-current' : 'bg-black/10 hover:bg-black/15'
+    }`}
   >
-    <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${checked ? 'bg-white/30 border-transparent' : 'border-current opacity-50'}`}>
-      {checked && <div className={`w-3 h-3 rounded-sm bg-current`} />}
+    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+      checked ? 'bg-white/40 border-transparent text-white' : 'border-current opacity-60'
+    }`}>
+      {checked && <Check className="w-3 h-3 stroke-[3]" />}
     </div>
-    <label htmlFor={id} className={`text-sm font-medium ${theme.textPrimary} cursor-pointer select-none`}>{label}</label>
+    <label htmlFor={id} className={`text-xs font-semibold ${theme.textPrimary} cursor-pointer select-none truncate`}>
+      {label}
+    </label>
   </div>
 );
 
 const RollSummary = ({ hitRoll, woundRoll, currentPage, setCurrentPage, theme }) => (
-  <div className={`grid grid-cols-2 gap-3 mb-2 mx-4 mt-2`}>
+  <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-1.5 sm:mb-2 mx-4 mt-1 sm:mt-2">
     <button
       onClick={() => setCurrentPage('hit')}
-      className={`relative text-center p-3 rounded-xl transition-all shadow-sm ${currentPage === 'hit'
+      className={`relative text-center p-2 sm:p-3 rounded-xl transition-all shadow-sm ${currentPage === 'hit'
         ? `${theme.cardBg} ring-2 ring-offset-2 ring-offset-[#F2F8F3] ${theme.activeRing}`
         : `${theme.cardBg} opacity-60 hover:opacity-80`
         } ring-offset-transparent`}
-      style={{ '--tw-ring-offset-color': 'transparent' }} // Simplified ring logic
+      style={{ '--tw-ring-offset-color': 'transparent' }}
     >
-      <div className="flex items-center justify-center space-x-2">
-        <Target className={`w-4 h-4 ${theme.textSecondary}`} />
-        <span className={`text-xs font-bold uppercase tracking-wide ${theme.textSecondary}`}>To Hit</span>
+      <div className="flex items-center justify-center space-x-1.5">
+        <Target className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${theme.textSecondary}`} />
+        <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-wide ${theme.textSecondary}`}>To Hit</span>
       </div>
-      <p className={`text-3xl font-black ${theme.textPrimary} mt-0`}>{hitRoll}+</p>
+      <p className={`text-2xl sm:text-3xl font-black ${theme.textPrimary} mt-0`}>{hitRoll}+</p>
     </button>
     <button
       onClick={() => setCurrentPage('wound')}
-      className={`relative text-center p-3 rounded-xl transition-all shadow-sm ${currentPage === 'wound'
+      className={`relative text-center p-2 sm:p-3 rounded-xl transition-all shadow-sm ${currentPage === 'wound'
         ? `${theme.cardBg} ring-2 ring-offset-2 ring-offset-transparent ${theme.activeRing}`
         : `${theme.cardBg} opacity-60 hover:opacity-80`
         }`}
     >
-      <div className="flex items-center justify-center space-x-2">
-        <Sword className={`w-4 h-4 ${theme.textSecondary}`} />
-        <span className={`text-xs font-bold uppercase tracking-wide ${theme.textSecondary}`}>To Wound</span>
+      <div className="flex items-center justify-center space-x-1.5">
+        <Sword className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${theme.textSecondary}`} />
+        <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-wide ${theme.textSecondary}`}>To Wound</span>
       </div>
-      <p className={`text-3xl font-black ${theme.textPrimary} mt-0`}>{woundRoll}+</p>
+      <p className={`text-2xl sm:text-3xl font-black ${theme.textPrimary} mt-0`}>{woundRoll}+</p>
     </button>
   </div>
 );
@@ -169,7 +183,7 @@ const WeaponSelector = ({
     : WEAPON_TRAITS.filter(t => t.category === selectedCategory);
 
   return (
-    <div className="space-y-1.5 pb-2 border-b border-black/10">
+    <div className="space-y-1.5 pb-2 border-b border-black/10 shrink-0">
       <div className="flex items-center justify-between">
         {/* W1 / W2 Pill Selector */}
         <div className="flex items-center space-x-1 bg-black/15 p-0.5 rounded-lg">
@@ -289,8 +303,8 @@ const WoundCalculator = ({
   const activeTraitNotes = WEAPON_TRAITS.filter(t => weaponTraits.includes(t.id));
 
   return (
-    <Card className={`w-full h-full border-none shadow-lg ${theme.cardBg} flex flex-col`}>
-      <CardContent className="p-4 flex-1 flex flex-col space-y-3">
+    <Card className={`w-full h-full border-none shadow-lg ${theme.cardBg} flex flex-col overflow-hidden`}>
+      <CardContent className="p-2.5 sm:p-4 flex-1 flex flex-col space-y-2 sm:space-y-3 overflow-y-auto scrollbar-none pb-12 sm:pb-4">
         <WeaponSelector
           activeWeaponIndex={activeWeaponIndex}
           onSwitchWeapon={onSwitchWeapon}
@@ -299,28 +313,30 @@ const WoundCalculator = ({
           theme={theme}
         />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {/* 3 stats side by side across ALL screen sizes! */}
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
           <StatInput
-            label="Survivor Strength"
+            label="Survivor Str"
             value={survivorStrength}
             onChange={setSurvivorStrength}
             theme={theme}
           />
           <StatInput
-            label="Weapon Strength"
+            label="Weapon Str"
             value={weaponStrength}
             onChange={setWeaponStrength}
             theme={theme}
           />
           <StatInput
-            label="Monster Toughness"
+            label="Monster Tough"
             value={monsterToughness}
             onChange={setMonsterToughness}
             theme={theme}
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        {/* Luck Controls */}
+        <div className="grid grid-cols-2 gap-2 max-w-xs mx-auto w-full">
           <StatInput
             label="Survivor Luck"
             value={luck}
@@ -335,8 +351,8 @@ const WoundCalculator = ({
           />
         </div>
 
-        <div className={`rounded-xl p-3 text-center mt-auto ${theme.buttonBg} backdrop-blur-sm space-y-1.5`}>
-          <div className={`space-y-1 text-xs font-medium ${theme.textSecondary}`}>
+        <div className={`rounded-xl p-2.5 sm:p-3 text-center mt-auto ${theme.buttonBg} backdrop-blur-sm space-y-1`}>
+          <div className={`space-y-0.5 text-xs font-medium ${theme.textSecondary}`}>
             <p>1 always fails • Lantern 10 always wounds</p>
             <p className={`text-sm font-bold ${theme.textPrimary}`}>
               Crit: {criticalText}
@@ -376,8 +392,8 @@ const HitCalculator = ({
   const activeTraitNotes = WEAPON_TRAITS.filter(t => weaponTraits.includes(t.id));
 
   return (
-    <Card className={`w-full h-full border-none shadow-lg ${theme.cardBg} flex flex-col`}>
-      <CardContent className="p-4 flex-1 flex flex-col space-y-3">
+    <Card className={`w-full h-full border-none shadow-lg ${theme.cardBg} flex flex-col overflow-hidden`}>
+      <CardContent className="p-2.5 sm:p-4 flex-1 flex flex-col space-y-2 sm:space-y-3 overflow-y-auto scrollbar-none pb-12 sm:pb-4">
         <WeaponSelector
           activeWeaponIndex={activeWeaponIndex}
           onSwitchWeapon={onSwitchWeapon}
@@ -386,45 +402,47 @@ const HitCalculator = ({
           theme={theme}
         />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {/* 3 stats side by side across ALL screen sizes! */}
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
           <StatInput
-            label="Survivor Accuracy"
+            label="Survivor Acc"
             value={survivorAccuracy}
             onChange={setSurvivorAccuracy}
             theme={theme}
           />
           <StatInput
-            label="Weapon Accuracy"
+            label="Weapon Acc"
             value={weaponAccuracy}
             onChange={setWeaponAccuracy}
             theme={theme}
           />
           <StatInput
-            label="Monster Evasion"
+            label="Monster Eva"
             value={monsterEvasion}
             onChange={setMonsterEvasion}
             theme={theme}
           />
         </div>
 
-        <div className="space-y-2 py-2">
+        {/* Checkboxes in 1 clean row */}
+        <div className="grid grid-cols-2 gap-2 py-0.5">
           <Checkbox
             id="blindSpot"
-            label="Attacking from Blind Spot (+1 acc)"
+            label="Blind Spot (+1)"
             checked={inBlindSpot}
             onChange={setInBlindSpot}
             theme={theme}
           />
           <Checkbox
             id="knockedDown"
-            label="Monster is Knocked Down (3+)"
+            label="Knocked Down (3+)"
             checked={monsterKnockedDown}
             onChange={setMonsterKnockedDown}
             theme={theme}
           />
         </div>
 
-        <div className={`rounded-xl p-3 text-center mt-auto ${theme.buttonBg} backdrop-blur-sm space-y-1.5`}>
+        <div className={`rounded-xl p-2.5 sm:p-3 text-center mt-auto ${theme.buttonBg} backdrop-blur-sm space-y-1`}>
           <p className={`text-xs font-medium ${theme.textSecondary}`}>
             Lantern 10 always hits • 1 always misses
           </p>
