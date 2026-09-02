@@ -22,32 +22,32 @@ const CompactStatInput = ({ label, value, onChange, theme, icon: Icon }) => {
   const decrement = () => onChange(Math.max(value - 1, -99));
 
   return (
-    <div className="flex flex-col items-center justify-center p-1 rounded-lg bg-black/10 backdrop-blur-xs">
-      <div className="flex items-center space-x-1 mb-0.5">
-        {Icon && <Icon className={`w-2.5 h-2.5 opacity-80 ${theme.textSecondary}`} />}
-        <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} truncate`}>
+    <div className="flex flex-col items-center justify-center p-0.5 sm:p-1 rounded-lg bg-black/10 backdrop-blur-xs">
+      <div className="flex items-center space-x-0.5 sm:space-x-1 mb-0.5">
+        {Icon && <Icon className={`w-2 h-2 sm:w-2.5 sm:h-2.5 opacity-80 ${theme.textSecondary}`} />}
+        <span className={`text-[8px] sm:text-[9px] md:text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} truncate`}>
           {label}
         </span>
       </div>
-      <div className="flex items-center justify-center space-x-1.5 w-full">
+      <div className="flex items-center justify-center space-x-1 sm:space-x-1.5 w-full">
         <button
           type="button"
           onClick={decrement}
-          className={`w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded-full transition-all ${theme.buttonBg} active:scale-95`}
+          className={`w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 flex items-center justify-center rounded-full transition-all ${theme.buttonBg} active:scale-95`}
           aria-label={`Decrease ${label}`}
         >
-          <Minus className={`w-3 h-3 md:w-3.5 md:h-3.5 ${theme.buttonIcon}`} />
+          <Minus className={`w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 ${theme.buttonIcon}`} />
         </button>
-        <span className={`w-5 md:w-6 text-center text-sm md:text-base font-black ${theme.textPrimary}`}>
+        <span className={`w-4 sm:w-5 md:w-6 text-center text-xs sm:text-sm md:text-base font-black ${theme.textPrimary}`}>
           {value}
         </span>
         <button
           type="button"
           onClick={increment}
-          className={`w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded-full transition-all ${theme.buttonBg} active:scale-95`}
+          className={`w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 flex items-center justify-center rounded-full transition-all ${theme.buttonBg} active:scale-95`}
           aria-label={`Increase ${label}`}
         >
-          <Plus className={`w-3 h-3 md:w-3.5 md:h-3.5 ${theme.buttonIcon}`} />
+          <Plus className={`w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 ${theme.buttonIcon}`} />
         </button>
       </div>
     </div>
@@ -216,8 +216,8 @@ const TvFourPlayerView = ({
         </div>
       </header>
 
-      {/* Main Container: Pure 4-Column Layout */}
-      <main className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 md:gap-2 flex-1 min-h-0 overflow-y-auto lg:overflow-visible">
+      {/* Main Container: Strictly 4 Columns Across All Landscape Screens */}
+      <main className="grid grid-cols-4 gap-1 sm:gap-1.5 md:gap-2 flex-1 min-h-0 overflow-hidden">
         {survivors.map((survivor, idx) => {
           const theme = themes[idx];
           const activeWeaponIdx = survivor.activeWeaponIndex || 0;
@@ -230,9 +230,9 @@ const TvFourPlayerView = ({
             <Card
               key={idx}
               onClick={() => onActivateSurvivor && onActivateSurvivor(idx)}
-              className={`border-none shadow-xl ${theme.cardBg} flex flex-col rounded-xl overflow-hidden h-full min-h-[250px] lg:min-h-0 cursor-pointer`}
+              className={`border-none shadow-xl ${theme.cardBg} flex flex-col rounded-xl overflow-hidden h-full min-h-0 cursor-pointer`}
             >
-              <CardContent className="p-2 md:p-2.5 flex-1 flex flex-col justify-between space-y-1.5">
+              <CardContent className="p-1 sm:p-1.5 md:p-2.5 flex-1 flex flex-col justify-between space-y-0.5 sm:space-y-1">
                 {/* Single-line Header: Survivor Title & W1/W2 Selector */}
                 <div className="flex items-center justify-between border-b border-black/10 pb-1">
                   <div className="flex items-center space-x-1.5">
@@ -305,25 +305,25 @@ const TvFourPlayerView = ({
                 </div>
 
                 {/* Dual Roll Tiles (Prominent side-by-side) */}
-                <div className="grid grid-cols-2 gap-1.5">
+                <div className="grid grid-cols-2 gap-1 sm:gap-1.5">
                   {/* To Hit Tile */}
-                  <div className="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg bg-black/20 backdrop-blur-xs">
-                    <div className="flex items-center space-x-1">
-                      <Target className={`w-3 h-3 ${theme.textSecondary}`} />
-                      <span className={`text-[9px] uppercase font-bold tracking-wider ${theme.textSecondary}`}>Hit</span>
+                  <div className="flex flex-col items-center justify-center py-1 sm:py-1.5 px-0.5 sm:px-1 rounded-lg bg-black/20 backdrop-blur-xs">
+                    <div className="flex items-center space-x-0.5 sm:space-x-1">
+                      <Target className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${theme.textSecondary}`} />
+                      <span className={`text-[8px] sm:text-[9px] uppercase font-bold tracking-wider ${theme.textSecondary}`}>Hit</span>
                     </div>
-                    <p className={`text-2xl lg:text-3xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
+                    <p className={`text-xl sm:text-2xl md:text-3xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
                       {hitRoll}+
                     </p>
                   </div>
 
                   {/* To Wound Tile */}
-                  <div className="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg bg-black/20 backdrop-blur-xs">
-                    <div className="flex items-center space-x-1">
-                      <Sword className={`w-3 h-3 ${theme.textSecondary}`} />
-                      <span className={`text-[9px] uppercase font-bold tracking-wider ${theme.textSecondary}`}>Wound</span>
+                  <div className="flex flex-col items-center justify-center py-1 sm:py-1.5 px-0.5 sm:px-1 rounded-lg bg-black/20 backdrop-blur-xs">
+                    <div className="flex items-center space-x-0.5 sm:space-x-1">
+                      <Sword className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${theme.textSecondary}`} />
+                      <span className={`text-[8px] sm:text-[9px] uppercase font-bold tracking-wider ${theme.textSecondary}`}>Wound</span>
                     </div>
-                    <p className={`text-2xl lg:text-3xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
+                    <p className={`text-xl sm:text-2xl md:text-3xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
                       {woundRoll}+
                     </p>
                   </div>
