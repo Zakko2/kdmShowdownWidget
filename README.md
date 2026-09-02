@@ -15,13 +15,48 @@ A web application designed to help Kingdom Death: Monster players calculate hit 
 
 ### Wound Calculator
 - Input fields for:
-  - Weapon Strength
   - Survivor Strength
+  - Weapon Strength
   - Monster Toughness
   - Survivor Luck
   - Monster Luck
 - Critical wound threshold calculation
 - Automatic luck comparison
+
+### Dual Weapon Slots & Weapon Traits
+- **Two Weapon Profiles per Survivor (`W1` & `W2`)**:
+  - Independent Accuracy, Strength, and Weapon Traits for each slot.
+  - Seamless toggle (`Weapon 1 | Weapon 2` or `W1 | W2`) in both Single View and 4-Player TV View.
+- **Weapon Trait Keywords**:
+  - **Deadly** (+1 Luck on wound attempts): Automatically calculates and lowers the critical wound target (e.g. 9+).
+  - **Deadly 2** (+2 Luck on wound attempts): Lowers critical wound target (e.g. 8+).
+  - **Sharp**: Displays rule reminder (*Add 1d10 strength to each wound attempt*).
+  - **Savage**: Displays rule reminder (*On critical wound, inflict +1 wound / draw extra location*).
+  - **Devastating**: Displays rule reminder (*Inflict 1 additional wound on successful wound*).
+  - **Frail**: Displays rule reminder (*Roll of 1 to wound breaks weapon*).
+  - **Paired**: Displays rule reminder (*Attack with both weapons / double speed*).
+  - **Slow / Unwieldy**: Reminders for speed limit and knockdown on 1s.
+- **Rule Reminders & Badges**:
+  - Full rule reminder notes appear in Single View cards.
+  - Trait badges display dynamically below the Crit badge in 4-Player TV view.
+  - Interactive Trait Manager modal accessible directly in 4-Player TV view via `+Traits`.
+
+### 4-Player TV View (Widescreen / SmartView)
+- **4-Column Layout** optimized for TV casting via SmartView to widescreen televisions, with quick toggle to 2x2 Grid
+- Real-time **Hit**, **Wound**, and **Crit** roll badges for every player visible at a glance
+- Shared top Monster control bar (Toughness, Evasion, Luck, Knocked Down toggle) that updates all 4 players concurrently
+- Compact stat controls per player following the **Survivor &rarr; Weapon &rarr; Monster** convention
+- Quick switch button (`4P TV` / `Single View`) in header and slide-up menu
+- Direct single-click navigation to jump into any individual survivor's detailed card
+
+### Session Persistence & Reset Controls
+- **Automatic Auto-Save via Cookies & LocalStorage**:
+  - Automatically saves all 4 survivors' stats, dual weapon profiles, active traits, and viewing preferences in real time.
+  - Data persists indefinitely across browser tabs, device sleep, and page reloads.
+  - Set with 1-year persistent cookies and client-side storage with backward-compatible schema migration.
+- **Reset Controls**:
+  - **Reset Survivors**: One-click wipe to reset all 4 survivors and weapons back to defaults for a new campaign.
+  - **Reset Monster**: Instant reset of monster Toughness, Evasion, Luck, and Knocked Down status for a fresh showdown.
 
 ### Interface
 - Unified navigation and results display
