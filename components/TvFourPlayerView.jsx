@@ -235,19 +235,16 @@ const TvFourPlayerView = ({
               <CardContent className="p-1 sm:p-1.5 md:p-2.5 flex-1 flex flex-col justify-between space-y-0.5 sm:space-y-1">
                 {/* Single-line Header: Survivor Title & W1/W2 Selector */}
                 <div className="flex items-center justify-between border-b border-black/10 pb-1">
-                  <div className="flex items-center space-x-1.5">
+                  <div className="flex items-center space-x-1 sm:space-x-1.5">
                     <button
                       type="button"
                       onClick={() => onSelectSurvivor(idx)}
-                      className="flex items-center space-x-1.5 text-left group"
+                      className="flex items-center text-left group"
                       title={`Open Survivor ${idx + 1} in Single View`}
                     >
-                      <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-black ${theme.dotActive} text-white shadow-sm group-hover:scale-105 transition-transform`}>
-                        {idx + 1}
-                      </div>
-                      <h2 className={`text-xs md:text-sm font-black uppercase tracking-wider ${theme.textPrimary}`}>
+                      <div className={`px-1.5 py-0.5 rounded-md flex items-center justify-center text-[10px] sm:text-xs font-black ${theme.dotActive} text-white shadow-xs group-hover:scale-105 transition-transform tracking-wider`}>
                         S{idx + 1}
-                      </h2>
+                      </div>
                     </button>
 
                     {/* W1 / W2 Pill Selector */}
