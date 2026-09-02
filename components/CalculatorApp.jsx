@@ -505,6 +505,7 @@ const CalculatorApp = () => {
   const wakeLockRef = useRef(null);
   const [wakeLockSupported, setWakeLockSupported] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
+  const lastOrientationRef = useRef(null);
 
   // Load from Cookies / LocalStorage on mount
   useEffect(() => {
@@ -513,11 +514,49 @@ const CalculatorApp = () => {
       setSurvivors(saved);
     }
     const prefs = loadViewPreferences();
-    if (prefs.viewMode) setViewMode(prefs.viewMode);
     if (typeof prefs.activeSurvivorIndex === 'number') {
       setActiveSurvivorIndex(prefs.activeSurvivorIndex);
     }
     setIsHydrated(true);
+  }, []);
+
+  // Auto-detect orientation: Portrait -> Single View (last interacted survivor), Landscape -> 4 Columns
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const checkOrientation = () => {
+      const isPortrait = window.matchMedia('(orientation: portrait)').matches || window.innerHeight > window.innerWidth;
+      const currentOrientation = isPortrait ? 'portrait' : 'landscape';
+
+      if (lastOrientationRef.current !== currentOrientation) {
+        lastOrientationRef.current = currentOrientation;
+        setViewMode(isPortrait ? 'single' : 'tv');
+      }
+    };
+
+    // Initial check
+    checkOrientation();
+
+    const mediaPortrait = window.matchMedia('(orientation: portrait)');
+    const handleMedia = () => checkOrientation();
+
+    if (mediaPortrait.addEventListener) {
+      mediaPortrait.addEventListener('change', handleMedia);
+    } else if (mediaPortrait.addListener) {
+      mediaPortrait.addListener(handleMedia);
+    }
+    window.addEventListener('orientationchange', handleMedia);
+    window.addEventListener('resize', handleMedia);
+
+    return () => {
+      if (mediaPortrait.removeEventListener) {
+        mediaPortrait.removeEventListener('change', handleMedia);
+      } else if (mediaPortrait.removeListener) {
+        mediaPortrait.removeListener(handleMedia);
+      }
+      window.removeEventListener('orientationchange', handleMedia);
+      window.removeEventListener('resize', handleMedia);
+    };
   }, []);
 
   // Auto-save survivors to Cookies and LocalStorage on change
@@ -565,6 +604,7 @@ const CalculatorApp = () => {
   };
 
   const updateSurvivorIndex = (index, field, value) => {
+    setActiveSurvivorIndex(index);
     setSurvivors(prev => {
       const newSurvivors = [...prev];
       newSurvivors[index] = {
@@ -580,6 +620,7 @@ const CalculatorApp = () => {
   };
 
   const switchSurvivorWeapon = (survivorIdx, weaponIdx) => {
+    setActiveSurvivorIndex(survivorIdx);
     setSurvivors(prev => {
       const newSurvivors = [...prev];
       newSurvivors[survivorIdx] = {
@@ -591,6 +632,7 @@ const CalculatorApp = () => {
   };
 
   const updateSurvivorWeaponStat = (survivorIdx, weaponIdx, field, value) => {
+    setActiveSurvivorIndex(survivorIdx);
     setSurvivors(prev => {
       const newSurvivors = [...prev];
       const survivor = { ...newSurvivors[survivorIdx] };
@@ -606,6 +648,7 @@ const CalculatorApp = () => {
   };
 
   const toggleSurvivorWeaponTrait = (survivorIdx, weaponIdx, traitId) => {
+    setActiveSurvivorIndex(survivorIdx);
     setSurvivors(prev => {
       const newSurvivors = [...prev];
       const survivor = { ...newSurvivors[survivorIdx] };
@@ -761,6 +804,7 @@ const CalculatorApp = () => {
             setActiveSurvivorIndex(idx);
             setViewMode('single');
           }}
+          onActivateSurvivor={(idx) => setActiveSurvivorIndex(idx)}
           onOpenMenu={() => setIsOpen(true)}
         />
       ) : (

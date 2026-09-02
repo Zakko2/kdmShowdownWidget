@@ -98,6 +98,7 @@ const TvFourPlayerView = ({
   themes,
   onSwitchToSingleView,
   onSelectSurvivor,
+  onActivateSurvivor,
   onOpenMenu
 }) => {
   const [traitModalSurvivorIdx, setTraitModalSurvivorIdx] = useState(null);
@@ -228,7 +229,8 @@ const TvFourPlayerView = ({
           return (
             <Card
               key={idx}
-              className={`border-none shadow-xl ${theme.cardBg} flex flex-col rounded-xl overflow-hidden h-full min-h-[250px] lg:min-h-0`}
+              onClick={() => onActivateSurvivor && onActivateSurvivor(idx)}
+              className={`border-none shadow-xl ${theme.cardBg} flex flex-col rounded-xl overflow-hidden h-full min-h-[250px] lg:min-h-0 cursor-pointer`}
             >
               <CardContent className="p-2 md:p-2.5 flex-1 flex flex-col justify-between space-y-1.5">
                 {/* Single-line Header: Survivor Title & W1/W2 Selector */}
@@ -281,7 +283,11 @@ const TvFourPlayerView = ({
                   <div className="flex items-center space-x-1">
                     <button
                       type="button"
-                      onClick={() => setTraitModalSurvivorIdx(idx)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setTraitModalSurvivorIdx(idx);
+                        if (onActivateSurvivor) onActivateSurvivor(idx);
+                      }}
                       className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${theme.buttonBg} transition-all`}
                       title="Manage Weapon Traits"
                     >
