@@ -428,9 +428,19 @@ const TvFourPlayerView = ({
         const survivor = survivors[traitModalSurvivorIdx];
         const activeWeaponIdx = survivor?.activeWeaponIndex || 0;
         const currentWeapon = getActiveWeapon(survivor);
+        const selectedTraits = WEAPON_TRAITS.filter(t => currentWeapon.traits && currentWeapon.traits.includes(t.id));
         const filteredTraits = modalCategory === 'All'
           ? WEAPON_TRAITS
           : WEAPON_TRAITS.filter(t => t.category === modalCategory);
+
+        // Sort so that within any category, selected traits also float to the top
+        const sortedFilteredTraits = [...filteredTraits].sort((a, b) => {
+          const aSelected = currentWeapon.traits && currentWeapon.traits.includes(a.id);
+          const bSelected = currentWeapon.traits && currentWeapon.traits.includes(b.id);
+          if (aSelected && !bSelected) return -1;
+          if (!aSelected && bSelected) return 1;
+          return 0;
+        });
 
         return (
           <div
@@ -455,6 +465,50 @@ const TvFourPlayerView = ({
                   Done
                 </button>
               </div>
+
+              {/* Selected Traits Review Section (Pinned at Top) */}
+              {selectedTraits.length > 0 && (
+                <div className="bg-neutral-950/80 border border-blue-500/40 rounded-xl p-2.5 space-y-1.5 shrink-0 shadow-inner">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                      <span className="text-[11px] font-black uppercase tracking-wider text-blue-300">
+                        Selected Traits ({selectedTraits.length})
+                      </span>
+                    </div>
+                    <span className="text-[9.5px] text-neutral-400">Tap to remove</span>
+                  </div>
+
+                  <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1 scrollbar-none">
+                    {selectedTraits.map(trait => (
+                      <div
+                        key={trait.id}
+                        onClick={() => toggleSurvivorWeaponTrait(traitModalSurvivorIdx, activeWeaponIdx, trait.id)}
+                        className="p-2 rounded-lg bg-blue-950/50 border border-blue-500/40 hover:border-red-400/50 hover:bg-red-950/20 flex items-start justify-between cursor-pointer transition-all group"
+                        title="Tap to remove"
+                      >
+                        <div className="flex flex-col pr-2">
+                          <div className="flex items-center space-x-1.5">
+                            <span className="text-xs font-bold text-white group-hover:text-red-200 transition-colors">
+                              {trait.name}
+                            </span>
+                            <span className="text-[8.5px] uppercase px-1.5 py-0.2 rounded bg-blue-500/30 text-blue-300 font-semibold">
+                              {trait.category}
+                            </span>
+                          </div>
+                          <span className="text-[10.5px] text-neutral-300 mt-0.5 leading-snug">
+                            {trait.description}
+                          </span>
+                        </div>
+                        <div className="w-5 h-5 rounded flex items-center justify-center bg-blue-500/20 text-blue-400 group-hover:bg-red-500/30 group-hover:text-red-400 shrink-0 mt-0.5 transition-colors">
+                          <Check className="w-3.5 h-3.5 stroke-[2.5] group-hover:hidden" />
+                          <Minus className="w-3.5 h-3.5 stroke-[2.5] hidden group-hover:block" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Category filter tabs */}
               <div className="flex items-center gap-1 overflow-x-auto pb-1 shrink-0 scrollbar-none text-[11px]">
@@ -488,7 +542,7 @@ const TvFourPlayerView = ({
 
               {/* Trait list */}
               <div className="grid grid-cols-1 gap-1.5 overflow-y-auto pr-1 flex-1">
-                {filteredTraits.map(trait => {
+                {sortedFilteredTraits.map(trait => {
                   const isSelected = currentWeapon.traits && currentWeapon.traits.includes(trait.id);
                   return (
                     <button

@@ -182,6 +182,15 @@ const WeaponSelector = ({
     ? WEAPON_TRAITS
     : WEAPON_TRAITS.filter(t => t.category === selectedCategory);
 
+  // Sort so selected traits always appear at the top/front
+  const sortedTraits = [...filteredTraits].sort((a, b) => {
+    const aSelected = weaponTraits.includes(a.id);
+    const bSelected = weaponTraits.includes(b.id);
+    if (aSelected && !bSelected) return -1;
+    if (!aSelected && bSelected) return 1;
+    return 0;
+  });
+
   return (
     <div className="space-y-1.5 pb-2 border-b border-black/10 shrink-0">
       <div className="flex items-center justify-between">
@@ -246,9 +255,9 @@ const WeaponSelector = ({
         })}
       </div>
 
-      {/* Trait Selector Pills - Horizontal scroll */}
+      {/* Trait Selector Pills - Horizontal scroll with selected traits at front */}
       <div className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none">
-        {filteredTraits.map(trait => {
+        {sortedTraits.map(trait => {
           const isSelected = weaponTraits.includes(trait.id);
           return (
             <button
