@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Plus,
@@ -15,44 +15,7 @@ import {
   Check,
   Menu
 } from 'lucide-react';
-import { WEAPON_TRAITS, TRAIT_CATEGORIES, getWeaponLuckBonus } from '@/lib/weaponTraits';
-
-const CompactStatInput = ({ label, value, onChange, theme, icon: Icon }) => {
-  const increment = () => onChange(Math.min(value + 1, 99));
-  const decrement = () => onChange(Math.max(value - 1, -99));
-
-  return (
-    <div className="flex flex-col items-center justify-center p-0.5 sm:p-1 rounded-lg bg-black/10 backdrop-blur-xs">
-      <div className="flex items-center space-x-0.5 sm:space-x-1 mb-0.5">
-        {Icon && <Icon className={`w-2 h-2 sm:w-2.5 sm:h-2.5 opacity-80 ${theme.textSecondary}`} />}
-        <span className={`text-[8px] sm:text-[9px] md:text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} truncate`}>
-          {label}
-        </span>
-      </div>
-      <div className="flex items-center justify-center space-x-1 sm:space-x-1.5 w-full">
-        <button
-          type="button"
-          onClick={decrement}
-          className={`w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 flex items-center justify-center rounded-full transition-all ${theme.buttonBg} active:scale-95`}
-          aria-label={`Decrease ${label}`}
-        >
-          <Minus className={`w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 ${theme.buttonIcon}`} />
-        </button>
-        <span className={`w-4 sm:w-5 md:w-6 text-center text-xs sm:text-sm md:text-base font-black ${theme.textPrimary}`}>
-          {value}
-        </span>
-        <button
-          type="button"
-          onClick={increment}
-          className={`w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 flex items-center justify-center rounded-full transition-all ${theme.buttonBg} active:scale-95`}
-          aria-label={`Increase ${label}`}
-        >
-          <Plus className={`w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 ${theme.buttonIcon}`} />
-        </button>
-      </div>
-    </div>
-  );
-};
+import { WEAPON_TRAITS, getWeaponLuckBonus } from '@/lib/weaponTraits';
 
 const MonsterStatInput = ({ label, value, onChange, icon: Icon }) => {
   const increment = () => onChange(Math.min(value + 1, 99));
@@ -101,9 +64,6 @@ const TvFourPlayerView = ({
   onActivateSurvivor,
   onOpenMenu
 }) => {
-  const [traitModalSurvivorIdx, setTraitModalSurvivorIdx] = useState(null);
-  const [modalCategory, setModalCategory] = useState('All');
-
   const getActiveWeapon = (survivor) => {
     const idx = survivor?.activeWeaponIndex || 0;
     return (survivor?.weapons && survivor.weapons[idx]) || { accuracy: 0, strength: 0, traits: [] };
@@ -225,36 +185,37 @@ const TvFourPlayerView = ({
           const hitRoll = calculateHitRollFor(survivor);
           const woundRoll = calculateWoundRollFor(survivor);
           const critText = calculateCritTextFor(survivor);
+          const weaponLuck = getWeaponLuckBonus(activeWeapon);
+          const activeTraits = (activeWeapon.traits || [])
+            .map(tId => WEAPON_TRAITS.find(t => t.id === tId))
+            .filter(Boolean);
 
           return (
             <Card
               key={idx}
-              onClick={() => onActivateSurvivor && onActivateSurvivor(idx)}
-              className={`border-none shadow-xl ${theme.cardBg} flex flex-col rounded-xl overflow-hidden h-full min-h-0 cursor-pointer`}
+              onClick={() => onSelectSurvivor(idx)}
+              className={`border-none shadow-xl ${theme.cardBg} flex flex-col rounded-xl overflow-hidden h-full min-h-0 cursor-pointer transition-all hover:scale-[1.008] hover:shadow-2xl group select-none`}
+              title={`Click to edit Survivor ${idx + 1} in Single View`}
             >
-              <CardContent className="p-1 sm:p-1.5 md:p-2.5 flex-1 flex flex-col justify-between space-y-0.5 sm:space-y-1">
-                {/* Single-line Header: Survivor Title & W1/W2 Selector */}
-                <div className="flex items-center justify-between border-b border-black/10 pb-1">
+              <CardContent className="p-1.5 sm:p-2 md:p-3 flex-1 flex flex-col justify-between space-y-1 sm:space-y-1.5 overflow-hidden">
+                {/* Single-line Header: Survivor Badge, W1/W2 Selector & Edit Action */}
+                <div className="flex items-center justify-between border-b border-black/10 pb-1 shrink-0">
                   <div className="flex items-center space-x-1 sm:space-x-1.5">
-                    <button
-                      type="button"
-                      onClick={() => onSelectSurvivor(idx)}
-                      className="flex items-center text-left group"
-                      title={`Open Survivor ${idx + 1} in Single View`}
-                    >
-                      <div className={`px-1.5 py-0.5 rounded-md flex items-center justify-center text-[10px] sm:text-xs font-black ${theme.dotActive} text-white shadow-xs group-hover:scale-105 transition-transform tracking-wider`}>
-                        S{idx + 1}
-                      </div>
-                    </button>
+                    <div className={`px-2 py-0.5 rounded-md flex items-center justify-center text-xs sm:text-sm font-black ${theme.dotActive} text-white shadow-xs tracking-wider`}>
+                      S{idx + 1}
+                    </div>
 
                     {/* W1 / W2 Pill Selector */}
                     <div className="flex items-center p-0.5 bg-black/20 rounded-md">
                       <button
                         type="button"
-                        onClick={() => switchSurvivorWeapon(idx, 0)}
-                        className={`px-1.5 py-0.2 rounded text-[10px] font-black transition-all ${
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          switchSurvivorWeapon(idx, 0);
+                        }}
+                        className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-black transition-all ${
                           activeWeaponIdx === 0
-                            ? 'bg-white/35 text-white shadow-sm'
+                            ? 'bg-white/35 text-white shadow-sm ring-1 ring-white/30'
                             : 'opacity-50 hover:opacity-100'
                         }`}
                         title="Switch to Weapon 1"
@@ -263,10 +224,13 @@ const TvFourPlayerView = ({
                       </button>
                       <button
                         type="button"
-                        onClick={() => switchSurvivorWeapon(idx, 1)}
-                        className={`px-1.5 py-0.2 rounded text-[10px] font-black transition-all ${
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          switchSurvivorWeapon(idx, 1);
+                        }}
+                        className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-black transition-all ${
                           activeWeaponIdx === 1
-                            ? 'bg-white/35 text-white shadow-sm'
+                            ? 'bg-white/35 text-white shadow-sm ring-1 ring-white/30'
                             : 'opacity-50 hover:opacity-100'
                         }`}
                         title="Switch to Weapon 2"
@@ -276,145 +240,104 @@ const TvFourPlayerView = ({
                     </div>
                   </div>
 
-                  {/* Trait manager & Single view button */}
-                  <div className="flex items-center space-x-1">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setTraitModalSurvivorIdx(idx);
-                        if (onActivateSurvivor) onActivateSurvivor(idx);
-                      }}
-                      className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${theme.buttonBg} transition-all`}
-                      title="Manage Weapon Traits"
-                    >
-                      +Traits
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onSelectSurvivor(idx)}
-                      className={`p-1 rounded opacity-70 hover:opacity-100 ${theme.buttonBg} transition-all`}
-                      title={`Open Survivor ${idx + 1} in Single View`}
-                    >
-                      <Smartphone className={`w-3 h-3 ${theme.buttonIcon}`} />
-                    </button>
-                  </div>
+                  {/* Edit in Single View button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectSurvivor(idx);
+                    }}
+                    className={`flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold ${theme.buttonBg} transition-all group-hover:bg-black/20 shadow-xs`}
+                    title={`Edit Survivor ${idx + 1} in Single View`}
+                  >
+                    <Smartphone className={`w-3 h-3 ${theme.buttonIcon}`} />
+                    <span className="font-extrabold uppercase tracking-wide">Edit</span>
+                  </button>
                 </div>
 
                 {/* Dual Roll Tiles (Prominent side-by-side) */}
-                <div className="grid grid-cols-2 gap-1 sm:gap-1.5">
+                <div className="grid grid-cols-2 gap-1 sm:gap-2 shrink-0">
                   {/* To Hit Tile */}
-                  <div className="flex flex-col items-center justify-center py-1 sm:py-1.5 px-0.5 sm:px-1 rounded-lg bg-black/20 backdrop-blur-xs">
-                    <div className="flex items-center space-x-0.5 sm:space-x-1">
-                      <Target className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${theme.textSecondary}`} />
-                      <span className={`text-[8px] sm:text-[9px] uppercase font-bold tracking-wider ${theme.textSecondary}`}>Hit</span>
+                  <div className="flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-xl bg-black/20 backdrop-blur-xs shadow-inner">
+                    <div className="flex items-center space-x-1">
+                      <Target className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${theme.textSecondary}`} />
+                      <span className={`text-[9px] sm:text-[10px] uppercase font-bold tracking-wider ${theme.textSecondary}`}>Hit</span>
                     </div>
-                    <p className={`text-xl sm:text-2xl md:text-3xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
+                    <p className={`text-2xl sm:text-3xl md:text-4xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
                       {hitRoll}+
                     </p>
                   </div>
 
                   {/* To Wound Tile */}
-                  <div className="flex flex-col items-center justify-center py-1 sm:py-1.5 px-0.5 sm:px-1 rounded-lg bg-black/20 backdrop-blur-xs">
-                    <div className="flex items-center space-x-0.5 sm:space-x-1">
-                      <Sword className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${theme.textSecondary}`} />
-                      <span className={`text-[8px] sm:text-[9px] uppercase font-bold tracking-wider ${theme.textSecondary}`}>Wound</span>
+                  <div className="flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-xl bg-black/20 backdrop-blur-xs shadow-inner">
+                    <div className="flex items-center space-x-1">
+                      <Sword className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${theme.textSecondary}`} />
+                      <span className={`text-[9px] sm:text-[10px] uppercase font-bold tracking-wider ${theme.textSecondary}`}>Wound</span>
                     </div>
-                    <p className={`text-xl sm:text-2xl md:text-3xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
+                    <p className={`text-2xl sm:text-3xl md:text-4xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
                       {woundRoll}+
                     </p>
                   </div>
                 </div>
 
-                {/* Crit Status Pill & Traits */}
-                <div className="space-y-1">
-                  <div className="flex items-center justify-center space-x-1 py-0.5 px-2 rounded bg-black/15 text-center">
-                    <Sparkles className={`w-2.5 h-2.5 ${theme.textSecondary}`} />
-                    <span className={`text-[10px] md:text-[11px] font-extrabold ${theme.textPrimary}`}>
-                      {critText}
+                {/* Special Attribute Info Section */}
+                <div className="flex-1 min-h-0 flex flex-col justify-start space-y-1 sm:space-y-1.5 overflow-y-auto scrollbar-none pt-0.5">
+                  {/* Crit Status Pill */}
+                  <div className="flex flex-col items-center justify-center py-1 sm:py-1.5 px-2 rounded-lg bg-black/15 text-center shrink-0">
+                    <div className="flex items-center space-x-1.5">
+                      <Sparkles className={`w-3 h-3 ${theme.textSecondary}`} />
+                      <span className={`text-xs sm:text-sm font-extrabold ${theme.textPrimary}`}>
+                        {critText}
+                      </span>
+                      {weaponLuck > 0 && (
+                        <span className={`text-[9px] sm:text-[10px] font-bold ${theme.textSecondary}`}>
+                          (+{weaponLuck} Deadly)
+                        </span>
+                      )}
+                    </div>
+                    <span className={`text-[8px] sm:text-[9px] font-medium opacity-75 ${theme.textSecondary} leading-tight mt-0.5`}>
+                      10s wound &bull; Crits cancel reactions
                     </span>
                   </div>
 
-                  {/* Active Weapon Traits Chips */}
-                  {activeWeapon.traits && activeWeapon.traits.length > 0 && (
-                    <div className="flex flex-wrap items-center justify-center gap-1">
-                      {activeWeapon.traits.map(tId => {
-                        const trait = WEAPON_TRAITS.find(t => t.id === tId);
-                        if (!trait) return null;
-                        return (
-                          <span
-                            key={trait.id}
-                            onClick={() => setTraitModalSurvivorIdx(idx)}
-                            className="px-1.5 py-0.2 rounded bg-black/25 text-[8.5px] font-black uppercase tracking-wider cursor-pointer hover:bg-black/40 transition-colors"
-                            title={trait.description}
-                          >
-                            {trait.name}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-
-                {/* Stat Modifiers - 3 compact rows: Acc -> Str -> BlindSpot/Luck */}
-                <div className="space-y-1 flex-1 flex flex-col justify-end pt-1 border-t border-black/10">
-                  {/* Row 1: Accuracy */}
-                  <div className="grid grid-cols-2 gap-1">
-                    <CompactStatInput
-                      label="Survivor Acc"
-                      value={survivor.accuracy}
-                      onChange={(v) => updateSurvivorIndex(idx, 'accuracy', v)}
-                      theme={theme}
-                    />
-                    <CompactStatInput
-                      label="Weapon Acc"
-                      value={activeWeapon.accuracy}
-                      onChange={(v) => updateSurvivorWeaponStat(idx, activeWeaponIdx, 'accuracy', v)}
-                      theme={theme}
-                    />
-                  </div>
-
-                  {/* Row 2: Strength */}
-                  <div className="grid grid-cols-2 gap-1">
-                    <CompactStatInput
-                      label="Survivor Str"
-                      value={survivor.strength}
-                      onChange={(v) => updateSurvivorIndex(idx, 'strength', v)}
-                      theme={theme}
-                    />
-                    <CompactStatInput
-                      label="Weapon Str"
-                      value={activeWeapon.strength}
-                      onChange={(v) => updateSurvivorWeaponStat(idx, activeWeaponIdx, 'strength', v)}
-                      theme={theme}
-                    />
-                  </div>
-
-                  {/* Row 3: Blind Spot & Survivor Luck side by side */}
-                  <div className="grid grid-cols-2 gap-1 items-center">
-                    <div
-                      onClick={() => updateSurvivorIndex(idx, 'blindSpot', !survivor.blindSpot)}
-                      className={`h-full flex items-center justify-center space-x-1.5 p-1 rounded-lg cursor-pointer transition-all ${
-                        survivor.blindSpot ? 'bg-black/25 ring-1 ring-current' : 'bg-black/10 hover:bg-black/15'
-                      }`}
-                    >
-                      <div className={`w-3 h-3 rounded border flex items-center justify-center ${
-                        survivor.blindSpot ? 'bg-white/40 border-transparent text-white' : 'border-current opacity-60'
-                      }`}>
-                        {survivor.blindSpot && <Check className="w-2 h-2 stroke-[3]" />}
-                      </div>
-                      <span className={`text-[9px] md:text-[10px] font-bold ${theme.textPrimary} select-none`}>
-                        Blind Spot
+                  {/* Active Blind Spot Indicator (if set on survivor) */}
+                  {survivor.blindSpot && (
+                    <div className="flex items-center justify-center space-x-1.5 py-0.5 px-2 rounded-md bg-black/20 border border-black/10 shrink-0">
+                      <Check className={`w-2.5 h-2.5 ${theme.textPrimary} stroke-[3]`} />
+                      <span className={`text-[9.5px] sm:text-[10px] font-black uppercase tracking-wider ${theme.textPrimary}`}>
+                        Blind Spot Active (+1 Acc)
                       </span>
                     </div>
+                  )}
 
-                    <CompactStatInput
-                      label="Survivor Luck"
-                      value={survivor.luck}
-                      onChange={(v) => updateSurvivorIndex(idx, 'luck', v)}
-                      theme={theme}
-                      icon={Clover}
-                    />
+                  {/* Active Weapon Traits & Rule Reminders */}
+                  <div className="space-y-1 flex-1">
+                    {activeTraits.length > 0 ? (
+                      activeTraits.map(trait => (
+                        <div
+                          key={trait.id}
+                          className="p-1.5 rounded-lg bg-black/15 flex flex-col space-y-0.5"
+                        >
+                          <div className="flex items-center space-x-1.5">
+                            <span className="px-1.5 py-0.2 rounded bg-black/30 text-[9px] sm:text-[9.5px] font-black uppercase tracking-wider text-white">
+                              {trait.name}
+                            </span>
+                            <span className={`text-[8px] sm:text-[8.5px] font-bold uppercase opacity-60 ${theme.textSecondary}`}>
+                              {trait.category}
+                            </span>
+                          </div>
+                          <p className={`text-[9.5px] sm:text-[10.5px] font-medium ${theme.textPrimary} leading-snug opacity-90`}>
+                            {trait.description}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex-1 flex items-center justify-center py-2 px-2 rounded-lg bg-black/10 text-center">
+                        <span className={`text-[9px] sm:text-[10px] font-semibold opacity-60 ${theme.textSecondary} uppercase tracking-wider`}>
+                          Standard Weapon &bull; No Special Traits
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -422,157 +345,6 @@ const TvFourPlayerView = ({
           );
         })}
       </main>
-
-      {/* Trait Manager Modal */}
-      {traitModalSurvivorIdx !== null && (() => {
-        const survivor = survivors[traitModalSurvivorIdx];
-        const activeWeaponIdx = survivor?.activeWeaponIndex || 0;
-        const currentWeapon = getActiveWeapon(survivor);
-        const selectedTraits = WEAPON_TRAITS.filter(t => currentWeapon.traits && currentWeapon.traits.includes(t.id));
-        const filteredTraits = modalCategory === 'All'
-          ? WEAPON_TRAITS
-          : WEAPON_TRAITS.filter(t => t.category === modalCategory);
-
-        // Sort so that within any category, selected traits also float to the top
-        const sortedFilteredTraits = [...filteredTraits].sort((a, b) => {
-          const aSelected = currentWeapon.traits && currentWeapon.traits.includes(a.id);
-          const bSelected = currentWeapon.traits && currentWeapon.traits.includes(b.id);
-          if (aSelected && !bSelected) return -1;
-          if (!aSelected && bSelected) return 1;
-          return 0;
-        });
-
-        return (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
-            onClick={() => setTraitModalSurvivorIdx(null)}
-          >
-            <div
-              className="bg-neutral-900 border border-neutral-700 rounded-2xl p-4 max-w-md w-full shadow-2xl space-y-3 flex flex-col max-h-[85vh]"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between border-b border-neutral-800 pb-2 shrink-0">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
-                    Survivor {traitModalSurvivorIdx + 1} &bull; Weapon {activeWeaponIdx + 1} Traits
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setTraitModalSurvivorIdx(null)}
-                  className="text-neutral-300 hover:text-white text-xs font-bold px-3 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700"
-                >
-                  Done
-                </button>
-              </div>
-
-              {/* Selected Traits Review Section (Pinned at Top) */}
-              {selectedTraits.length > 0 && (
-                <div className="bg-neutral-950/80 border border-blue-500/40 rounded-xl p-2.5 space-y-1.5 shrink-0 shadow-inner">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                      <span className="text-[11px] font-black uppercase tracking-wider text-blue-300">
-                        Selected Traits ({selectedTraits.length})
-                      </span>
-                    </div>
-                    <span className="text-[9.5px] text-neutral-400">Tap to remove</span>
-                  </div>
-
-                  <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1 scrollbar-none">
-                    {selectedTraits.map(trait => (
-                      <div
-                        key={trait.id}
-                        onClick={() => toggleSurvivorWeaponTrait(traitModalSurvivorIdx, activeWeaponIdx, trait.id)}
-                        className="p-2 rounded-lg bg-blue-950/50 border border-blue-500/40 hover:border-red-400/50 hover:bg-red-950/20 flex items-start justify-between cursor-pointer transition-all group"
-                        title="Tap to remove"
-                      >
-                        <div className="flex flex-col pr-2">
-                          <div className="flex items-center space-x-1.5">
-                            <span className="text-xs font-bold text-white group-hover:text-red-200 transition-colors">
-                              {trait.name}
-                            </span>
-                            <span className="text-[8.5px] uppercase px-1.5 py-0.2 rounded bg-blue-500/30 text-blue-300 font-semibold">
-                              {trait.category}
-                            </span>
-                          </div>
-                          <span className="text-[10.5px] text-neutral-300 mt-0.5 leading-snug">
-                            {trait.description}
-                          </span>
-                        </div>
-                        <div className="w-5 h-5 rounded flex items-center justify-center bg-blue-500/20 text-blue-400 group-hover:bg-red-500/30 group-hover:text-red-400 shrink-0 mt-0.5 transition-colors">
-                          <Check className="w-3.5 h-3.5 stroke-[2.5] group-hover:hidden" />
-                          <Minus className="w-3.5 h-3.5 stroke-[2.5] hidden group-hover:block" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Category filter tabs */}
-              <div className="flex items-center gap-1 overflow-x-auto pb-1 shrink-0 scrollbar-none text-[11px]">
-                {TRAIT_CATEGORIES.map(cat => {
-                  const countInCat = cat === 'All'
-                    ? (currentWeapon.traits || []).length
-                    : WEAPON_TRAITS.filter(t => t.category === cat && currentWeapon.traits?.includes(t.id)).length;
-                  const isCatActive = modalCategory === cat;
-
-                  return (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => setModalCategory(cat)}
-                      className={`px-2.5 py-1 rounded-lg font-bold transition-all whitespace-nowrap flex items-center space-x-1 ${
-                        isCatActive
-                          ? 'bg-blue-600 text-white shadow-sm'
-                          : 'bg-neutral-800 text-neutral-400 hover:text-white'
-                      }`}
-                    >
-                      <span>{cat}</span>
-                      {countInCat > 0 && (
-                        <span className="w-4 h-4 rounded-full bg-white/25 text-[9px] font-black flex items-center justify-center">
-                          {countInCat}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Trait list */}
-              <div className="grid grid-cols-1 gap-1.5 overflow-y-auto pr-1 flex-1">
-                {sortedFilteredTraits.map(trait => {
-                  const isSelected = currentWeapon.traits && currentWeapon.traits.includes(trait.id);
-                  return (
-                    <button
-                      key={trait.id}
-                      type="button"
-                      onClick={() => toggleSurvivorWeaponTrait(traitModalSurvivorIdx, activeWeaponIdx, trait.id)}
-                      className={`flex items-start justify-between p-2.5 rounded-xl text-left border transition-all ${
-                        isSelected
-                          ? 'bg-blue-600/30 border-blue-500 text-white shadow-sm'
-                          : 'bg-neutral-800/60 border-neutral-700/60 text-neutral-300 hover:bg-neutral-800'
-                      }`}
-                    >
-                      <div className="flex flex-col pr-2">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xs font-bold text-white">{trait.name}</span>
-                          <span className="text-[9px] uppercase px-1.5 py-0.2 rounded bg-neutral-700 text-neutral-300 font-semibold tracking-wider">
-                            {trait.category}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-neutral-400 mt-0.5">{trait.description}</span>
-                      </div>
-                      {isSelected && <Check className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        );
-      })()}
     </div>
   );
 };
