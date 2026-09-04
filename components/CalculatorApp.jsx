@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Plus, Minus, Sword, Target, Share2, Copy, Zap, ZapOff, Tv, Check, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Minus, Sword, Target, Share2, Copy, Zap, ZapOff, Tv, Check, RotateCcw, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import TvFourPlayerView from '@/components/TvFourPlayerView';
 import { WEAPON_TRAITS, TRAIT_CATEGORIES, getWeaponLuckBonus, createWeapon } from '@/lib/weaponTraits';
@@ -226,7 +226,7 @@ const WeaponSelector = ({
       </div>
 
       {/* Category filter tabs */}
-      <div className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none text-[10px]">
+      <div onPointerDown={(e) => e.stopPropagation()} className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none text-[10px]">
         {TRAIT_CATEGORIES.map(cat => {
           const countInCat = cat === 'All'
             ? weaponTraits.length
@@ -256,7 +256,7 @@ const WeaponSelector = ({
       </div>
 
       {/* Trait Selector Pills - Horizontal scroll with selected traits at front */}
-      <div className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none">
+      <div onPointerDown={(e) => e.stopPropagation()} className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none">
         {sortedTraits.map(trait => {
           const isSelected = weaponTraits.includes(trait.id);
           return (
@@ -484,7 +484,8 @@ const CalculatorApp = () => {
   const version = "v0.4.0";
 
   // Initial State Factory
-  const createSurvivor = () => ({
+  const createSurvivor = (name = '') => ({
+    name: typeof name === 'string' ? name : '',
     accuracy: 0,
     strength: 0,
     luck: 0,
@@ -515,6 +516,13 @@ const CalculatorApp = () => {
   const [wakeLockSupported, setWakeLockSupported] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const lastOrientationRef = useRef(null);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState('');
+
+  // Reset name editing state when switching active survivor
+  useEffect(() => {
+    setIsEditingName(false);
+  }, [activeSurvivorIndex]);
 
   // Load from Cookies / LocalStorage on mount
   useEffect(() => {
@@ -719,12 +727,25 @@ const CalculatorApp = () => {
   const hitRequiredRoll = calculateHitRollFor(currentSurvivor, monster);
   const woundRequiredRoll = calculateWoundRollFor(currentSurvivor, monster);
 
+  const [slideDirection, setSlideDirection] = useState(0);
+
+  const nextSurvivor = () => {
+    setSlideDirection(1);
+    setActiveSurvivorIndex((prev) => (prev + 1) % 4);
+  };
+
+  const prevSurvivor = () => {
+    setSlideDirection(-1);
+    setActiveSurvivorIndex((prev) => (prev - 1 + 4) % 4);
+  };
+
   const handleDragEnd = (event, info) => {
     const threshold = 50;
-    if (info.offset.x < -threshold) {
-      setActiveSurvivorIndex((prev) => (prev + 1) % 4);
-    } else if (info.offset.x > threshold) {
-      setActiveSurvivorIndex((prev) => (prev - 1 + 4) % 4);
+    const velocityThreshold = 400;
+    if (info.offset.x < -threshold || info.velocity.x < -velocityThreshold) {
+      nextSurvivor();
+    } else if (info.offset.x > threshold || info.velocity.x > velocityThreshold) {
+      prevSurvivor();
     }
   };
 
@@ -821,22 +842,78 @@ const CalculatorApp = () => {
           {/* Header with Nav Arrows */}
           <div className="pt-2 pb-0 flex items-center justify-between px-4">
             <div className="w-14" />
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1.5 sm:space-x-2">
               <button
+                id="prev-survivor-btn"
                 type="button"
-                onClick={() => setActiveSurvivorIndex((prev) => (prev - 1 + 4) % 4)}
+                onClick={prevSurvivor}
                 className="p-1 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                 title="Previous Survivor"
                 aria-label="Previous Survivor"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <h1 className="text-xs font-black uppercase tracking-[0.2em] opacity-90 text-white">
-                Survivor {activeSurvivorIndex + 1}
-              </h1>
+
+              {isEditingName ? (
+                <div className="flex items-center space-x-1">
+                  <input
+                    id="rename-survivor-input"
+                    type="text"
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        updateSurvivor('name', nameInput.trim());
+                        setIsEditingName(false);
+                      } else if (e.key === 'Escape') {
+                        setIsEditingName(false);
+                      }
+                    }}
+                    onBlur={() => {
+                      updateSurvivor('name', nameInput.trim());
+                      setIsEditingName(false);
+                    }}
+                    autoFocus
+                    maxLength={20}
+                    placeholder={`Survivor ${activeSurvivorIndex + 1}`}
+                    className="bg-black/50 text-white text-xs font-black uppercase tracking-wider px-2 py-0.5 rounded-lg border border-white/40 text-center outline-none focus:border-white focus:ring-1 focus:ring-white w-28 sm:w-36 shadow-inner"
+                  />
+                  <button
+                    id="save-survivor-name-btn"
+                    type="button"
+                    onClick={() => {
+                      updateSurvivor('name', nameInput.trim());
+                      setIsEditingName(false);
+                    }}
+                    className="p-1 rounded-md text-emerald-400 hover:text-emerald-300 hover:bg-white/10 transition-colors"
+                    title="Save Name"
+                    aria-label="Save Name"
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  id="rename-survivor-btn"
+                  type="button"
+                  onClick={() => {
+                    setNameInput(currentSurvivor.name || '');
+                    setIsEditingName(true);
+                  }}
+                  className="flex items-center space-x-1.5 px-2 py-0.5 rounded-lg hover:bg-white/10 transition-all group max-w-[150px] sm:max-w-[200px]"
+                  title="Click to rename survivor"
+                >
+                  <h1 className="text-xs font-black uppercase tracking-[0.15em] text-white opacity-95 group-hover:opacity-100 truncate">
+                    {currentSurvivor.name || `Survivor ${activeSurvivorIndex + 1}`}
+                  </h1>
+                  <Pencil className="w-2.5 h-2.5 text-white/50 group-hover:text-white transition-colors shrink-0" />
+                </button>
+              )}
+
               <button
+                id="next-survivor-btn"
                 type="button"
-                onClick={() => setActiveSurvivorIndex((prev) => (prev + 1) % 4)}
+                onClick={nextSurvivor}
                 className="p-1 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                 title="Next Survivor"
                 aria-label="Next Survivor"
@@ -845,6 +922,7 @@ const CalculatorApp = () => {
               </button>
             </div>
             <button
+              id="tv-mode-btn"
               onClick={() => setViewMode('tv')}
               className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-semibold backdrop-blur-xs transition-colors shadow-sm"
               title="Switch to 4-Player TV View"
@@ -864,14 +942,36 @@ const CalculatorApp = () => {
 
           {/* Main Content Area */}
           <div className="flex-1 min-h-0 relative overflow-hidden">
-            <AnimatePresence mode='wait' initial={false}>
+            <AnimatePresence mode="popLayout" custom={slideDirection} initial={false}>
               <motion.div
                 key={activeSurvivorIndex}
-                className="absolute inset-0 px-4 pb-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
+                custom={slideDirection}
+                variants={{
+                  enter: (dir) => ({
+                    x: dir > 0 ? '100%' : dir < 0 ? '-100%' : 0,
+                    opacity: 0
+                  }),
+                  center: {
+                    x: 0,
+                    opacity: 1
+                  },
+                  exit: (dir) => ({
+                    x: dir > 0 ? '-100%' : dir < 0 ? '100%' : 0,
+                    opacity: 0
+                  })
+                }}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  x: { type: "spring", stiffness: 350, damping: 32 },
+                  opacity: { duration: 0.15 }
+                }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={handleDragEnd}
+                className="absolute inset-0 px-4 pb-2 touch-pan-y"
               >
                 {currentPage === 'hit' ? (
                   <HitCalculator
@@ -918,22 +1018,28 @@ const CalculatorApp = () => {
 
           {/* Dots Indicator - Interactive */}
           <div className="absolute bottom-3 left-0 right-0 flex justify-center space-x-3 pointer-events-auto z-20">
-            {THEMES.map((t, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setActiveSurvivorIndex(idx)}
-                className="p-1 group focus:outline-hidden"
-                title={`Switch to Survivor ${idx + 1}`}
-                aria-label={`Switch to Survivor ${idx + 1}`}
-              >
-                <div
-                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                    idx === activeSurvivorIndex ? `${t.dotActive} scale-125 ring-2 ring-white/50` : `${t.dotInactive} hover:scale-110`
-                  }`}
-                />
-              </button>
-            ))}
+            {THEMES.map((t, idx) => {
+              const survivorName = survivors[idx]?.name || `Survivor ${idx + 1}`;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setSlideDirection(idx > activeSurvivorIndex ? 1 : -1);
+                    setActiveSurvivorIndex(idx);
+                  }}
+                  className="p-1 group focus:outline-hidden"
+                  title={`Switch to ${survivorName}`}
+                  aria-label={`Switch to ${survivorName}`}
+                >
+                  <div
+                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                      idx === activeSurvivorIndex ? `${t.dotActive} scale-125 ring-2 ring-white/50` : `${t.dotInactive} hover:scale-110`
+                    }`}
+                  />
+                </button>
+              );
+            })}
           </div>
 
           {/* Share Button (transparent/unobtrusive) */}

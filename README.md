@@ -50,6 +50,8 @@ A web application designed to help Kingdom Death: Monster players calculate hit 
 - Direct single-click navigation to jump into any individual survivor's detailed card for editing
 
 ### Mobile Portrait Optimization
+- **Survivor Renaming**: Tap any survivor's name or the pencil icon in the header to rename them (e.g. Allister, Lucy); names persist across sessions and sync to 4-Player TV view cards
+- **Swipe Navigation**: Effortlessly swipe left or right on the survivor card to navigate between survivors with fluid spring slide animations
 - Responsive 3-column stat rows fitting Survivor, Weapon, and Monster stats side-by-side with zero cutoffs
 - Side-by-side compact checkboxes for Blind Spot and Knocked Down
 - Critical wound calculations and weapon rule reminder notes fully visible above navigation dots

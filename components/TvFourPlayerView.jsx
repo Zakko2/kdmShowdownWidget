@@ -153,6 +153,7 @@ const TvFourPlayerView = ({
         {/* Right: Sleek Single View button & Menu button */}
         <div className="flex items-center space-x-1.5 shrink-0">
           <button
+            id="single-view-btn"
             type="button"
             onClick={onSwitchToSingleView}
             className="flex items-center space-x-1 px-2 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold transition-colors shadow-sm whitespace-nowrap"
@@ -193,18 +194,27 @@ const TvFourPlayerView = ({
           return (
             <Card
               key={idx}
+              id={`tv-card-${idx}`}
               onClick={() => onSelectSurvivor(idx)}
               className={`border-none shadow-xl ${theme.cardBg} flex flex-col rounded-xl overflow-hidden h-full min-h-0 cursor-pointer transition-all hover:scale-[1.008] hover:shadow-2xl group select-none`}
-              title={`Click to edit Survivor ${idx + 1} in Single View`}
+              title={`Click to edit ${survivor.name || `Survivor ${idx + 1}`} in Single View`}
             >
               <CardContent className="p-1.5 sm:p-2 md:p-3 flex-1 flex flex-col justify-between space-y-1 sm:space-y-1.5 overflow-hidden">
-                {/* Single-line Header: Survivor Badge, W1/W2 Selector & Edit Action */}
-                <div className="flex items-center justify-between border-b border-black/10 pb-1 shrink-0">
-                  <div className="flex items-center space-x-1 sm:space-x-1.5">
-                    <div className={`px-2 py-0.5 rounded-md flex items-center justify-center text-xs sm:text-sm font-black ${theme.dotActive} text-white shadow-xs tracking-wider`}>
+                {/* Single-line Header: Survivor Badge, Custom Name, W1/W2 Selector & Edit Action */}
+                <div className="flex items-center justify-between gap-1 border-b border-black/10 pb-1 shrink-0">
+                  <div className="flex items-center space-x-1 min-w-0 overflow-hidden">
+                    <div className={`px-1.5 py-0.5 rounded-md flex items-center justify-center text-[10px] sm:text-xs font-black ${theme.dotActive} text-white shadow-xs tracking-wider shrink-0`}>
                       S{idx + 1}
                     </div>
 
+                    {survivor.name && (
+                      <span id={`tv-survivor-name-${idx}`} className={`text-[10px] sm:text-xs font-black truncate ${theme.textPrimary}`} title={survivor.name}>
+                        {survivor.name}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center space-x-1 shrink-0">
                     {/* W1 / W2 Pill Selector */}
                     <div className="flex items-center p-0.5 bg-black/20 rounded-md">
                       <button
@@ -213,7 +223,7 @@ const TvFourPlayerView = ({
                           e.stopPropagation();
                           switchSurvivorWeapon(idx, 0);
                         }}
-                        className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-black transition-all ${
+                        className={`px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black transition-all ${
                           activeWeaponIdx === 0
                             ? 'bg-white/35 text-white shadow-sm ring-1 ring-white/30'
                             : 'opacity-50 hover:opacity-100'
@@ -228,7 +238,7 @@ const TvFourPlayerView = ({
                           e.stopPropagation();
                           switchSurvivorWeapon(idx, 1);
                         }}
-                        className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-black transition-all ${
+                        className={`px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black transition-all ${
                           activeWeaponIdx === 1
                             ? 'bg-white/35 text-white shadow-sm ring-1 ring-white/30'
                             : 'opacity-50 hover:opacity-100'
@@ -238,21 +248,21 @@ const TvFourPlayerView = ({
                         W2
                       </button>
                     </div>
-                  </div>
 
-                  {/* Edit in Single View button */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSelectSurvivor(idx);
-                    }}
-                    className={`flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold ${theme.buttonBg} transition-all group-hover:bg-black/20 shadow-xs`}
-                    title={`Edit Survivor ${idx + 1} in Single View`}
-                  >
-                    <Smartphone className={`w-3 h-3 ${theme.buttonIcon}`} />
-                    <span className="font-extrabold uppercase tracking-wide">Edit</span>
-                  </button>
+                    {/* Edit in Single View button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectSurvivor(idx);
+                      }}
+                      className={`flex items-center space-x-0.5 sm:space-x-1 px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold ${theme.buttonBg} transition-all group-hover:bg-black/20 shadow-xs`}
+                      title={`Edit ${survivor.name || `Survivor ${idx + 1}`} in Single View`}
+                    >
+                      <Smartphone className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${theme.buttonIcon}`} />
+                      <span className="font-extrabold uppercase tracking-wide hidden lg:inline">Edit</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Dual Roll Tiles (Prominent side-by-side) */}
