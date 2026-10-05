@@ -721,7 +721,7 @@ const CalculatorApp = () => {
   const calculateWoundRollFor = (survivor, monsterObj) => {
     const weapon = getActiveWeapon(survivor);
     let required = monsterObj.toughness - weapon.strength - survivor.strength;
-    return Math.max(2, Math.min(9, required));
+    return Math.max(2, Math.min(10, required));
   };
 
   const hitRequiredRoll = calculateHitRollFor(currentSurvivor, monster);

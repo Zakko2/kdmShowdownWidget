@@ -79,7 +79,7 @@ const TvFourPlayerView = ({
   const calculateWoundRollFor = (survivor) => {
     const weapon = getActiveWeapon(survivor);
     let required = monster.toughness - weapon.strength - survivor.strength;
-    return Math.max(2, Math.min(9, required));
+    return Math.max(2, Math.min(10, required));
   };
 
   const calculateCritTextFor = (survivor) => {
