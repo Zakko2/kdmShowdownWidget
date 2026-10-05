@@ -152,6 +152,9 @@ const RollSummary = ({ hitRoll, woundRoll, currentPage, setCurrentPage, theme })
         <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-wide ${theme.textSecondary}`}>To Hit</span>
       </div>
       <p className={`text-2xl sm:text-3xl font-black ${theme.textPrimary} mt-0`}>{hitRoll}+</p>
+      {hitRoll > 10 && (
+        <p className={`text-[10px] sm:text-xs font-bold ${theme.textSecondary} leading-tight`}>Lantern 10 only</p>
+      )}
     </button>
     <button
       onClick={() => setCurrentPage('wound')}
@@ -718,7 +721,7 @@ const CalculatorApp = () => {
     if (monsterObj.knockedDown) return 3;
     const weapon = getActiveWeapon(survivor);
     let total = weapon.accuracy + monsterObj.evasion - survivor.accuracy - (survivor.blindSpot ? 1 : 0);
-    return Math.max(2, Math.min(10, total));
+    return Math.max(2, total);
   };
 
   const calculateWoundRollFor = (survivor, monsterObj) => {

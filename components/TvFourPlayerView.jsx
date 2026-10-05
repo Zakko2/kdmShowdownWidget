@@ -73,7 +73,7 @@ const TvFourPlayerView = ({
     if (monster.knockedDown) return 3;
     const weapon = getActiveWeapon(survivor);
     let total = weapon.accuracy + monster.evasion - survivor.accuracy - (survivor.blindSpot ? 1 : 0);
-    return Math.max(2, Math.min(10, total));
+    return Math.max(2, total);
   };
 
   const calculateWoundRollFor = (survivor) => {
@@ -276,6 +276,11 @@ const TvFourPlayerView = ({
                     <p className={`text-2xl sm:text-3xl md:text-4xl font-black ${theme.textPrimary} mt-0.5 leading-none`}>
                       {hitRoll}+
                     </p>
+                    {hitRoll > 10 && (
+                      <span className={`text-[8px] sm:text-[9px] font-bold ${theme.textSecondary} leading-tight mt-0.5`}>
+                        L10 only
+                      </span>
+                    )}
                   </div>
 
                   {/* To Wound Tile */}
